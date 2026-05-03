@@ -59,7 +59,7 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
 @media (max-width: 700px) { .rates-list { grid-template-columns: 1fr; } }
 .rate-item { display: grid; grid-template-columns: auto auto 1fr 1fr; gap: 10px; align-items: center; padding: 8px 4px; border-bottom: 1px dashed var(--border); }
 .currency-mark {
-  width: 30px; height: 20px; border-radius: 4px;
+  width: 32px; height: 24px; border-radius: 4px;
   display: inline-flex; align-items: center; justify-content: center;
   background: linear-gradient(135deg, #ffffff 0%, #eef2f7 100%);
   border: 1px solid #d8dee8; box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
@@ -69,7 +69,6 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
   overflow: hidden; position: relative;
 }
 .currency-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.currency-mark svg { width: 100%; height: 100%; display: block; }
 .currency-mark .fallback-code { display: none; }
 .currency-mark.no-flag .fallback-code { display: inline; }
 .rate-code { font-weight: 700; font-size: 13px; }
@@ -970,111 +969,11 @@ const FLAG_COUNTRY_BY_CURRENCY = {
 };
 function currencyMark(code) {
   const country = FLAG_COUNTRY_BY_CURRENCY[code];
-  const flag = country ? flagSvg(country, code) : '';
-  if (!flag) return `<span class="currency-mark no-flag" aria-label="${code}"><span class="fallback-code">${code}</span></span>`;
-  return `<span class="currency-mark" aria-label="${code}">${flag}</span>`;
-}
-function flagRect(x, y, w, h, fill) {
-  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`;
-}
-function flagCircle(cx, cy, r, fill) {
-  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>`;
-}
-function flagText(txt, fill = '#fff', size = 10) {
-  return `<text x="30" y="17" text-anchor="middle" fill="${fill}" font-family="Arial, sans-serif" font-size="${size}" font-weight="800">${txt}</text>`;
-}
-function hFlag(colors) {
-  const h = 20 / colors.length;
-  return colors.map((c, i) => flagRect(0, i * h, 60, h, c)).join('');
-}
-function vFlag(colors) {
-  const w = 60 / colors.length;
-  return colors.map((c, i) => flagRect(i * w, 0, w, 20, c)).join('');
-}
-function nordicFlag(bg, cross, inner) {
-  return `${flagRect(0,0,60,20,bg)}${flagRect(16,0,8,20,cross)}${flagRect(0,8,60,5,cross)}${flagRect(18,0,4,20,inner)}${flagRect(0,9,60,3,inner)}`;
-}
-function crescentFlag(bg, star = true) {
-  return `${flagRect(0,0,60,20,bg)}${flagCircle(25,10,6,'#fff')}${flagCircle(28,10,5,bg)}${star ? `<polygon points="39,6 40.3,9.1 43.7,9.2 41,11.2 42,14.5 39,12.5 36.2,14.5 37.1,11.2 34.4,9.2 37.8,9.1" fill="#fff"/>` : ''}`;
-}
-function cantonFlag(bg, canton, label = '') {
-  return `${flagRect(0,0,60,20,bg)}${flagRect(0,0,24,11,canton)}${label ? flagText(label, '#fff', 7) : ''}`;
-}
-function stripedCanton(colors, canton, label = '') {
-  return `${hFlag(colors)}${flagRect(0,0,25,11,canton)}${label ? flagText(label, '#fff', 7) : ''}`;
-}
-function flagSvg(country, code) {
-  const flagBody = {
-    eu: `${flagRect(0,0,60,20,'#1d4ed8')}${Array.from({length:12},(_,i)=>{ const a=(i/12)*Math.PI*2; return flagCircle(30+Math.cos(a)*9,10+Math.sin(a)*6,1.1,'#fde047'); }).join('')}`,
-    pl: hFlag(['#fff','#dc143c']),
-    us: stripedCanton(['#b91c1c','#fff','#b91c1c','#fff','#b91c1c','#fff','#b91c1c'], '#1e3a8a', '★'),
-    gb: `${flagRect(0,0,60,20,'#1e3a8a')}<path d="M0 0 L60 20 M60 0 L0 20" stroke="#fff" stroke-width="6"/><path d="M0 0 L60 20 M60 0 L0 20" stroke="#dc2626" stroke-width="3"/><path d="M30 0 V20 M0 10 H60" stroke="#fff" stroke-width="8"/><path d="M30 0 V20 M0 10 H60" stroke="#dc2626" stroke-width="4"/>`,
-    ch: `${flagRect(0,0,60,20,'#dc2626')}${flagRect(26,4,8,12,'#fff')}${flagRect(20,8,20,4,'#fff')}`,
-    no: nordicFlag('#ba0c2f','#fff','#00205b'),
-    se: nordicFlag('#006aa7','#fecc00','#fecc00'),
-    dk: nordicFlag('#c60c30','#fff','#fff'),
-    is: nordicFlag('#02529c','#fff','#dc1e35'),
-    cz: `${hFlag(['#fff','#dc2626'])}<polygon points="0,0 28,10 0,20" fill="#1d4ed8"/>`,
-    hu: hFlag(['#ce2939','#fff','#477050']),
-    ro: vFlag(['#002b7f','#fcd116','#ce1126']),
-    bg: hFlag(['#fff','#00966e','#d62612']),
-    ua: hFlag(['#0057b7','#ffd700']),
-    ru: hFlag(['#fff','#0039a6','#d52b1e']),
-    by: `${vFlag(['#c8313e','#c8313e','#4aa657'])}${flagRect(0,0,9,20,'#fff')}${flagText('BY','#fff',7)}`,
-    md: `${vFlag(['#0033a0','#ffd100','#cc092f'])}${flagCircle(30,10,3.2,'#7c2d12')}`,
-    tr: crescentFlag('#e30a17'),
-    rs: `${hFlag(['#c6363c','#0c4076','#fff'])}${flagCircle(18,10,3.5,'#facc15')}`,
-    ba: `${flagRect(0,0,60,20,'#002395')}<polygon points="25,0 60,20 60,0" fill="#fecb00"/>${flagText('BA','#fff',7)}`,
-    al: `${flagRect(0,0,60,20,'#e41e20')}${flagText('AL','#111827',7)}`,
-    mk: `${flagRect(0,0,60,20,'#d20000')}<path d="M30 10 L0 0 M30 10 L60 0 M30 10 L0 20 M30 10 L60 20 M30 10 V0 M30 10 V20 M30 10 H0 M30 10 H60" stroke="#ffe600" stroke-width="3"/>${flagCircle(30,10,4,'#ffe600')}`,
-    ge: `${flagRect(0,0,60,20,'#fff')}${flagRect(27,0,6,20,'#e11d48')}${flagRect(0,8,60,4,'#e11d48')}`,
-    am: hFlag(['#d90012','#0033a0','#f2a800']),
-    az: `${hFlag(['#00b5e2','#ef3340','#509e2f'])}${flagCircle(29,10,4,'#fff')}${flagCircle(31,10,3.4,'#ef3340')}`,
-    kz: `${flagRect(0,0,60,20,'#00afca')}${flagCircle(30,10,4,'#fcd116')}`,
-    ae: `${flagRect(0,0,14,20,'#ef3340')}${flagRect(14,0,46,6.7,'#009739')}${flagRect(14,6.7,46,6.6,'#fff')}${flagRect(14,13.3,46,6.7,'#000')}`,
-    sa: `${flagRect(0,0,60,20,'#006c35')}${flagText('SA','#fff',7)}`,
-    qa: `${flagRect(0,0,18,20,'#fff')}<polygon points="18,0 60,0 60,20 18,20 24,17 18,14 24,11 18,8 24,5 18,2" fill="#8a1538"/>`,
-    kw: `${hFlag(['#007a3d','#fff','#ce1126'])}<polygon points="0,0 18,6.7 18,13.3 0,20" fill="#000"/>`,
-    bh: `${flagRect(0,0,18,20,'#fff')}<polygon points="18,0 60,0 60,20 18,20 25,17 18,14 25,11 18,8 25,5 18,2" fill="#ce1126"/>`,
-    om: `${flagRect(0,0,16,20,'#c8102e')}${flagRect(16,0,44,6.7,'#fff')}${flagRect(16,6.7,44,6.6,'#c8102e')}${flagRect(16,13.3,44,6.7,'#009a44')}`,
-    jo: `${hFlag(['#000','#fff','#007a3d'])}<polygon points="0,0 24,10 0,20" fill="#ce1126"/>`,
-    il: `${flagRect(0,0,60,20,'#fff')}${flagRect(0,2,60,3,'#0038b8')}${flagRect(0,15,60,3,'#0038b8')}<polygon points="30,6 34,13 26,13" fill="none" stroke="#0038b8" stroke-width="1.4"/><polygon points="30,14 34,7 26,7" fill="none" stroke="#0038b8" stroke-width="1.4"/>`,
-    eg: hFlag(['#ce1126','#fff','#000']),
-    ma: `${flagRect(0,0,60,20,'#c1272d')}<polygon points="30,5 31.7,9 36,9 32.5,11.5 34,16 30,13.2 26,16 27.5,11.5 24,9 28.3,9" fill="none" stroke="#006233" stroke-width="1.2"/>`,
-    tn: `${flagRect(0,0,60,20,'#e70013')}${flagCircle(30,10,6,'#fff')}${flagCircle(29,10,3.2,'#e70013')}${flagCircle(30.5,10,2.7,'#fff')}`,
-    dz: `${vFlag(['#006233','#fff'])}${flagCircle(28,10,4,'#d21034')}${flagCircle(30,10,3.4,'#fff')}`,
-    za: `${flagRect(0,0,60,20,'#002395')}${flagRect(0,0,60,10,'#de3831')}<path d="M0 0 L28 10 L0 20" fill="#000" stroke="#ffb612" stroke-width="8"/><path d="M0 0 L28 10 L0 20" fill="#000" stroke="#007a4d" stroke-width="5"/><path d="M28 10 H60" stroke="#fff" stroke-width="6"/><path d="M28 10 H60" stroke="#007a4d" stroke-width="3"/>`,
-    ng: vFlag(['#008751','#fff','#008751']),
-    ke: `${hFlag(['#000','#bb0000','#006600'])}${flagRect(0,6,60,1.2,'#fff')}${flagRect(0,12.8,60,1.2,'#fff')}`,
-    gh: `${hFlag(['#ce1126','#fcd116','#006b3f'])}<polygon points="30,6 31.2,9 34.5,9 31.8,11 32.9,14 30,12.1 27.1,14 28.2,11 25.5,9 28.8,9" fill="#111"/>`,
-    et: `${hFlag(['#078930','#fcd116','#da121a'])}${flagCircle(30,10,4,'#0f47af')}`,
-    jp: `${flagRect(0,0,60,20,'#fff')}${flagCircle(30,10,6,'#bc002d')}`,
-    cn: `${flagRect(0,0,60,20,'#de2910')}<polygon points="10,4 11,7 14,7 11.5,8.8 12.5,12 10,10 7.5,12 8.5,8.8 6,7 9,7" fill="#ffde00"/>`,
-    hk: `${flagRect(0,0,60,20,'#de2910')}${flagText('HK','#fff',7)}`,
-    tw: `${flagRect(0,0,60,20,'#fe0000')}${flagRect(0,0,25,11,'#000095')}${flagCircle(12.5,5.5,3,'#fff')}`,
-    kr: `${flagRect(0,0,60,20,'#fff')}${flagCircle(30,10,5,'#cd2e3a')}<path d="M25 10a5 5 0 0 0 10 0a2.5 2.5 0 0 1-5 0a2.5 2.5 0 0 0-5 0" fill="#0047a0"/>`,
-    sg: `${hFlag(['#ef3340','#fff'])}${flagCircle(13,6,4,'#fff')}${flagCircle(15,6,3.4,'#ef3340')}`,
-    my: stripedCanton(['#cc0001','#fff','#cc0001','#fff','#cc0001','#fff','#cc0001'], '#010066', '✦'),
-    th: hFlag(['#a51931','#fff','#2d2a4a','#2d2a4a','#fff','#a51931']),
-    vn: `${flagRect(0,0,60,20,'#da251d')}<polygon points="30,5 31.4,9 35.5,9 32.2,11.3 33.5,15 30,12.8 26.5,15 27.8,11.3 24.5,9 28.6,9" fill="#ff0"/>`,
-    id: hFlag(['#ce1126','#fff']),
-    ph: `${hFlag(['#0038a8','#ce1126'])}<polygon points="0,0 24,10 0,20" fill="#fff"/>${flagCircle(8,10,2,'#fcd116')}`,
-    in: `${hFlag(['#ff9933','#fff','#138808'])}${flagCircle(30,10,3,'#000080')}`,
-    pk: `${flagRect(0,0,14,20,'#fff')}${flagRect(14,0,46,20,'#01411c')}${flagCircle(33,10,5,'#fff')}${flagCircle(35,10,4.2,'#01411c')}`,
-    bd: `${flagRect(0,0,60,20,'#006a4e')}${flagCircle(27,10,6,'#f42a41')}`,
-    lk: `${flagRect(0,0,60,20,'#8d153a')}${flagRect(0,0,12,20,'#00534e')}${flagRect(12,0,8,20,'#eb7400')}${flagRect(20,0,2,20,'#ffbe29')}${flagRect(0,0,60,2,'#ffbe29')}${flagRect(0,18,60,2,'#ffbe29')}`,
-    au: cantonFlag('#012169','#1e3a8a','AU'),
-    nz: cantonFlag('#00247d','#1e3a8a','NZ'),
-    ca: `${vFlag(['#d52b1e','#fff','#d52b1e'])}<polygon points="30,5 32,9 36,8 33,11 35,15 30,13 25,15 27,11 24,8 28,9" fill="#d52b1e"/>`,
-    mx: `${vFlag(['#006847','#fff','#ce1126'])}${flagCircle(30,10,2.5,'#8b5e34')}`,
-    br: `${flagRect(0,0,60,20,'#009b3a')}<polygon points="30,3 53,10 30,17 7,10" fill="#ffdf00"/>${flagCircle(30,10,5,'#002776')}`,
-    ar: `${hFlag(['#74acdf','#fff','#74acdf'])}${flagCircle(30,10,2.5,'#f6b40e')}`,
-    cl: `${hFlag(['#fff','#d52b1e'])}${flagRect(0,0,20,10,'#0039a6')}${flagText('★','#fff',7)}`,
-    co: hFlag(['#fcd116','#fcd116','#003893','#ce1126']),
-    pe: vFlag(['#d91023','#fff','#d91023'])
-  }[country];
-  if (!flagBody) return '';
-  return `<svg viewBox="0 0 60 20" role="img" aria-label="${code} flag" preserveAspectRatio="none">${flagBody}</svg>`;
+  if (!country) return `<span class="currency-mark no-flag" aria-label="${code}"><span class="fallback-code">${code}</span></span>`;
+  return `<span class="currency-mark" aria-label="${code}">
+    <img src="assets/flags/${country}.svg" alt="${code} flag" decoding="async" onerror="this.hidden=true;this.parentElement.classList.add('no-flag')">
+    <span class="fallback-code">${code}</span>
+  </span>`;
 }
 
 const WEEK_DAYS = ['Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota','Niedziela'];

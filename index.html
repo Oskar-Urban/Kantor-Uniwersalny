@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Statyczna wersja demo strony Kantor Uniwersalny przygotowana do publikacji przez GitHub Pages.">
+<meta name="robots" content="noindex, nofollow">
+<title>Kantor Uniwersalny — demo klienta</title>
+<style>
+:root {
+  color-scheme: light;
+  --navy: #0c2340;
+  --scroll-lock: 0; --navy-2: #143358; --gold: #c8a25a; --gold-2: #b08c46;
+  --green: #15803d; --red: #b91c1c; --bg: #f6f7f9; --card: #ffffff;
+  --border: #e3e6ec; --text: #0f1729; --muted: #6b7280;
+  --shadow: 0 1px 3px rgba(15,23,41,.06), 0 4px 12px rgba(15,23,41,.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5; }
+body { padding-bottom: 0; }
+
+.demo-banner { background: #fff7ed; color: #9a3412; border-bottom: 1px solid #fed7aa; padding: 10px 20px; font-size: 13px; text-align: center; }
+.demo-banner strong { color: #7c2d12; }
+.demo-banner a { color: #7c2d12; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+
+header.site { background: var(--navy); color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+header.site .brand { display: flex; align-items: center; gap: 12px; }
+header.site .logo { width: 46px; height: 46px; border-radius: 9px; background: linear-gradient(135deg, var(--gold), var(--gold-2)); border: 2px solid rgba(255,255,255,.42); box-shadow: inset 0 0 0 1px rgba(12,35,64,.16); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy); font-size: 18px; letter-spacing: 0; flex-shrink: 0; }
+header.site h1 { font-size: 20px; font-weight: 700; }
+header.site .slogan { font-size: 12px; opacity: .8; }
+header.site nav { display: flex; gap: 20px; font-size: 14px; }
+header.site nav a { color: white; text-decoration: none; opacity: .9; }
+header.site nav a:hover { opacity: 1; text-decoration: underline; }
+
+.hero { position: relative; height: 280px; overflow: hidden; display: flex; align-items: flex-end; padding: 32px; background: linear-gradient(135deg, #1e3a5f 0%, #0c2340 50%, #2d4663 100%); }
+.hero .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; z-index: 0; }
+.hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,35,64,.85) 0%, rgba(12,35,64,.3) 60%, transparent 100%); z-index: 1; }
+.hero-content { position: relative; color: white; max-width: 600px; z-index: 2; }
+.hero h2 { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+.hero p { font-size: 16px; opacity: .95; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+.grid { display: grid; gap: 20px; }
+.grid-2 { grid-template-columns: 1.2fr 1fr; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); }
+.card h3 { font-size: 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+.card h3 .live { font-size: 11px; font-weight: 500; color: var(--green); display: flex; align-items: center; gap: 6px; }
+.card h3 .live::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.6s infinite; }
+.card h3 .live.simulated { color: #b45309; }
+.card h3 .live.simulated::before { background: #b45309; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+.rates-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; }
+@media (max-width: 700px) { .rates-list { grid-template-columns: 1fr; } }
+.rate-item { display: grid; grid-template-columns: auto auto 1fr 1fr; gap: 10px; align-items: center; padding: 8px 4px; border-bottom: 1px dashed var(--border); }
+.currency-mark {
+  width: 30px; height: 20px; border-radius: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #ffffff 0%, #eef2f7 100%);
+  border: 1px solid #d8dee8; box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+  color: var(--navy); font-size: 9px; line-height: 1; font-weight: 800;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  letter-spacing: 0; font-variant-numeric: tabular-nums;
+  overflow: hidden; position: relative;
+}
+.currency-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.currency-mark .fallback-code { display: none; }
+.currency-mark.no-flag .fallback-code { display: inline; }
+.rate-code { font-weight: 700; font-size: 13px; }
+.rate-side { text-align: right; line-height: 1.1; }
+.rate-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
+.rate-val { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 1px; }
+.rates-updated { font-size: 12px; color: var(--muted); margin-top: 14px; text-align: right; }
+.rates-source { font-size: 11px; color: var(--muted); }
+.rates-source .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 600; margin-left: 4px; }
+.rates-source .badge.real { background: #dcfce7; color: #166534; }
+.rates-source .badge.sim { background: #fef3c7; color: #92400e; }
+
+.calc { padding: 4px; }
+.calc-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; margin-bottom: 12px; }
+.calc-row label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; font-weight: 500; }
+.calc-input { display: flex; align-items: stretch; border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color .15s; }
+.calc-input:focus-within { border-color: var(--navy); }
+.calc-input input { flex: 1; border: 0; outline: 0; padding: 14px 18px 14px 22px; font-size: 22px; font-weight: 600; background: transparent; color: var(--text); font-variant-numeric: tabular-nums; min-width: 0; }
+.calc-input select { border: 0; outline: 0; padding: 0 16px; background: #f3f4f6; font-size: 14px; font-weight: 600; cursor: pointer; min-width: 90px; border-left: 1px solid var(--border); }
+.calc-swap { display: flex; justify-content: center; margin: 4px 0; }
+.calc-swap button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 18px; transition: all .15s; }
+.calc-swap button:hover { background: var(--navy); color: white; border-color: var(--navy); transform: rotate(180deg); }
+.calc-info { margin-top: 16px; padding: 12px; background: #f8fafc; border-radius: 8px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.calc-info strong { color: var(--text); }
+.calc-mode-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: var(--navy); color: white; border-radius: 6px; font-size: 10px; font-weight: 600; letter-spacing: .5px; margin-left: 8px; text-transform: uppercase; }
+.calc-mode-tag.unlocked { background: var(--gold-2); }
+.calc-disclaimer { margin-top: 16px; padding: 10px 12px; background: #fafbfc; border-left: 3px solid var(--gold); border-radius: 4px; font-size: 12px; color: var(--muted); line-height: 1.5; display: flex; gap: 8px; align-items: flex-start; }
+.calc-disclaimer .ico { color: var(--gold-2); font-weight: 700; flex-shrink: 0; }
+
+.services-cat { margin-bottom: 28px; }
+.cat-expand-bar { margin-top: 14px; display: flex; justify-content: center; }
+.cat-expand-btn { background: white; border: 1px solid var(--border); color: var(--navy); padding: 8px 22px; border-radius: 22px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; transition: all .15s; }
+.cat-expand-btn:hover { background: var(--navy); color: white; border-color: var(--navy); }
+.services-cat:last-child { margin-bottom: 0; }
+.services-cat-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #f1f3f6; }
+.services-cat-head .name { font-weight: 700; font-size: 15px; color: var(--navy); }
+.services-cat-head .count { display: none; }
+.services-grid { display: grid; gap: 14px; align-items: stretch; }
+.services-grid.size-1,
+.services-grid.size-2,
+.services-grid.size-3,
+.services-grid.size-many { grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); }
+@media (max-width: 700px) { .services-grid.size-1, .services-grid.size-2, .services-grid.size-3, .services-grid.size-many { grid-template-columns: 1fr; } }
+/* Service cards keep one compact frame: 2 title lines, 4 description lines, price row */
+.service {
+  border: 1px solid var(--border); border-radius: 10px;
+  background: white;
+  display: grid; grid-template-columns: auto 1fr;
+  align-items: stretch;
+  padding: 0; overflow: hidden;
+  height: 190px;
+}
+.service-photo-col {
+  width: 150px; height: 100%; box-sizing: border-box;
+  display: grid; grid-template-columns: 1fr;
+  background: white;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+.service-photo-col.two {
+  width: 165px;
+  grid-template-columns: 1fr 1fr; /* DEFAULT: side-by-side rectangles */
+}
+.service-photo-col.icon-only { display: flex; align-items: center; justify-content: center; }
+.service-photo-col .service-photo {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  padding: 4px; box-sizing: border-box;
+  min-width: 0; min-height: 0;
+  cursor: zoom-in;
+  transition: transform 0.15s ease;
+  display: block;
+}
+.service-photo-col.no-zoom .service-photo { cursor: default; }
+.service-photo-col.no-zoom .service-photo:hover { transform: none; }
+.service-photo:hover { transform: scale(1.04); }
+.service-photo-col.two .service-photo:first-child {
+  border-right: 1px dashed var(--border);
+}
+
+.service-icon { font-size: 38px; line-height: 1; }
+.service .body {
+  padding: 14px 16px; min-width: 0;
+  display: flex; flex-direction: column; justify-content: flex-start;
+  overflow: hidden;
+}
+.service .service-name { font-weight: 600; font-size: 14px; line-height: 20px; min-height: 40px; max-height: 42px; margin: 0 0 6px; overflow: hidden; overflow-wrap: anywhere; display: block; }
+.service .service-desc { font-size: 12px; line-height: 17px; min-height: 68px; max-height: 72px; margin: 0 0 8px; overflow: hidden; overflow-wrap: break-word; display: block; }
+.service .service-price { font-size: 16px; line-height: 22px; font-weight: 700; color: var(--gold-2); }
+.service .service-price-row { margin-top: auto; padding-top: 4px; min-height: 26px; }
+
+@media (max-width: 700px) {
+  .service { height: 190px; }
+  .service-photo-col { width: 118px !important; }
+  .service-photo-col.two { width: 150px !important; }
+}
+.service-name { font-weight: 600; margin-bottom: 4px; }
+.service-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.service-price { font-size: 18px; font-weight: 700; color: var(--gold-2); }
+.service-unit { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+.contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 700px) { .contact-row { grid-template-columns: 1fr; } }
+.contact-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+.contact-item:last-child { border-bottom: 0; }
+.contact-item .ico { width: 32px; height: 32px; border-radius: 8px; background: #eff3f9; color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 700; }
+.contact-item .lbl { font-size: 12px; color: var(--muted); }
+.contact-item .val { font-weight: 600; }
+.contact-item .val a { color: var(--navy); text-decoration: none; }
+
+.hours-table { width: 100%; font-size: 13px; }
+.hours-table tr td { padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.hours-table tr td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.hours-table tr.today { font-weight: 700; color: var(--navy); }
+.hours-table tr.today td:first-child::before { content: '▸ '; color: var(--gold); }
+
+.map-mock { width: 100%; height: 260px; border-radius: 10px; border: 1px solid var(--border); position: relative; overflow: hidden; background: linear-gradient(rgba(232,239,247,.6), rgba(232,239,247,.6)), repeating-linear-gradient(0deg, #d6dde7 0, #d6dde7 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #d6dde7 0, #d6dde7 1px, transparent 1px, transparent 40px), #eef2f8; }
+.map-mock::before, .map-mock::after { content: ''; position: absolute; background: #f5e6c8; }
+.map-mock::before { left: 30%; top: 0; bottom: 0; width: 14%; transform: skewX(-12deg); }
+.map-mock::after { top: 55%; left: 0; right: 0; height: 18%; }
+.map-mock .road2 { position: absolute; top: 20%; left: 0; right: 0; height: 6%; background: #e8d4a8; }
+.map-mock .pin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -100%); width: 32px; height: 32px; border-radius: 50% 50% 50% 0; background: var(--red); rotate: -45deg; box-shadow: 0 4px 8px rgba(0,0,0,.25); z-index: 2; }
+.map-mock .pin::after { content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%); }
+.map-mock .label { position: absolute; left: 50%; top: 50%; transform: translate(-50%, 22px); background: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,.15); white-space: nowrap; z-index: 2; }
+.map-mock .note { position: absolute; bottom: 8px; right: 8px; background: rgba(255,255,255,.9); padding: 4px 8px; border-radius: 4px; font-size: 10px; color: var(--muted); }
+.location-card { display: flex; flex-direction: column; min-height: 100%; }
+.location-card h3 { flex: 0 0 auto; }
+.map-frame { width: 100%; flex: 1 1 auto; min-height: 260px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #eef2f8; }
+.map-frame iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+footer.site { background: var(--navy); color: white; padding: 30px 24px 20px; margin-top: 40px; text-align: center; }
+footer.site p { font-size: 13px; opacity: .85; margin-bottom: 8px; }
+footer.site .legal { font-size: 11px; opacity: .6; }
+footer.site .admin-link { font-size: 10px; color: rgba(255,255,255,.35); text-decoration: none; display: inline-block; margin-top: 16px; padding: 4px 8px; border-radius: 4px; transition: all .2s; }
+footer.site .admin-link:hover { color: rgba(255,255,255,.8); background: rgba(255,255,255,.05); }
+
+.modal-bg { position: fixed; inset: 0; background: rgba(15,23,41,.6); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+.modal-bg.show { display: flex; }
+.modal { background: white; border-radius: 14px; padding: 28px; max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.modal h2 { font-size: 20px; margin-bottom: 6px; }
+.modal .sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.modal label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 4px; font-weight: 500; }
+.modal input[type=text], .modal input[type=password] { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: 0; margin-bottom: 14px; }
+.modal input:focus { border-color: var(--navy); }
+.modal .err { color: var(--red); font-size: 12px; margin-bottom: 10px; min-height: 16px; }
+
+.btn { padding: 10px 18px; border: 0; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .15s; font-family: inherit; }
+.btn-primary { background: var(--navy); color: white; }
+.btn-primary:hover { background: var(--navy-2); }
+.btn-ghost { background: transparent; color: var(--text); }
+.btn-ghost:hover { background: #f3f4f6; }
+.btn-danger { background: var(--red); color: white; }
+.btn-danger:hover { background: #991b1b; }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-gold:hover { background: var(--gold-2); }
+.btn-block { width: 100%; }
+.btn-sm { padding: 6px 10px; font-size: 12px; }
+
+.btn-save { background: var(--gold); color: var(--navy); position: relative; }
+.btn-save:hover:not(:disabled) { background: var(--gold-2); }
+.btn-save:disabled { background: rgba(255,255,255,.12); color: rgba(255,255,255,.45); cursor: not-allowed; }
+.btn-save.dirty::after { content: ''; position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; background: var(--red); border-radius: 50%; border: 2px solid var(--navy); animation: pulse 1.6s infinite; }
+.dirty-banner { background: #fef3c7; color: #92400e; padding: 8px 14px; font-size: 12px; text-align: center; border-bottom: 1px solid #fde68a; display: none; }
+.dirty-banner.show { display: block; }
+
+.admin-panel { position: fixed; inset: 0; background: var(--bg); z-index: 900; display: none; overflow-y: auto; overscroll-behavior: contain; }
+.admin-panel.show { display: block; }
+.admin-header { background: var(--navy); color: white; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; gap: 10px; flex-wrap: wrap; }
+.admin-header h2 { font-size: 18px; }
+.admin-tabs { background: white; border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; gap: 4px; overflow-x: auto; position: sticky; top: 53px; z-index: 9; }
+.admin-tabs button { border: 0; background: transparent; padding: 14px 18px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; font-family: inherit; }
+.admin-tabs button.active { color: var(--navy); border-bottom-color: var(--navy); }
+.admin-content { padding: 24px; max-width: 1100px; margin: 0 auto; }
+.admin-section { display: none; }
+.admin-section.active { display: block; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+@media (max-width: 700px) { .form-row { grid-template-columns: 1fr; } }
+.form-field { display: flex; flex-direction: column; }
+.form-field label { font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+.form-field input, .form-field textarea, .form-field select { padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: 0; font-family: inherit; background: white; }
+.form-field textarea { resize: vertical; min-height: 60px; }
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: var(--navy); }
+
+.photo-wysiwyg-wrap { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.photo-wysiwyg-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+.photo-wysiwyg { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.photo-controls { margin-top: 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; }
+.photo-controls label { font-size: 12px; color: var(--muted); }
+.photo-controls input[type=range] { width: 100%; }
+
+.pln-lock-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; background: white; display: flex; gap: 18px; align-items: flex-start; }
+.pln-lock-card .icon-big { width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; background: linear-gradient(135deg, #fef3c7, #fde68a); }
+.pln-lock-card.unlocked .icon-big { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+.pln-lock-card .body { flex: 1; }
+.pln-lock-card h4 { font-size: 16px; margin-bottom: 4px; }
+.pln-lock-card p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+.pln-lock-card .switch-row { display: flex; align-items: center; gap: 10px; }
+.pln-lock-card .switch-row span { font-size: 13px; font-weight: 600; }
+
+.cur-search { width: 100%; max-width: 400px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; margin-bottom: 12px; outline: 0; }
+.bulk-margin { background: linear-gradient(135deg, #f8fafc 0%, #fef9ed 100%); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 18px; }
+.bulk-margin-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.bulk-margin-title .badge { font-size: 10px; padding: 2px 6px; background: var(--gold); color: var(--navy); border-radius: 4px; font-weight: 700; }
+.bulk-margin-row { display: grid; grid-template-columns: 1fr 1fr 1.4fr auto; gap: 10px; align-items: end; }
+@media (max-width: 700px) { .bulk-margin-row { grid-template-columns: 1fr 1fr; } .bulk-margin-row > *:last-child { grid-column: 1 / -1; } }
+.bulk-margin-row .form-field input, .bulk-margin-row .form-field select { padding: 8px 10px; font-size: 13px; background: white; }
+.bulk-margin-row .form-field label { font-size: 11px; }
+.bulk-help { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.4; }
+
+.cur-group { margin-bottom: 24px; }
+.cur-group-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 8px 14px; border-radius: 8px; }
+.cur-group.offered .cur-group-head { background: #dcfce7; color: #166534; }
+.cur-group.not-offered .cur-group-head { background: #f3f4f6; color: var(--muted); }
+.cur-group-head .ttl { font-weight: 700; font-size: 14px; }
+.cur-group-head .cnt { font-size: 12px; opacity: .8; }
+.cur-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+.cur-item { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; background: white; }
+.cur-group.offered .cur-item { border-color: #bbf7d0; background: #f0fdf4; }
+.cur-group.not-offered .cur-item { opacity: .75; }
+.cur-item .flag { font-size: 22px; }
+.cur-item .info .code { font-weight: 700; font-size: 14px; }
+.cur-item .info .name { font-size: 11px; color: var(--muted); }
+.cur-item .margins { display: flex; gap: 4px; font-size: 11px; }
+.cur-item .margins input { width: 50px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; font-size: 11px; text-align: right; outline: 0; background: white; }
+.cur-empty { text-align: center; padding: 24px; color: var(--muted); font-size: 13px; background: white; border: 1px dashed var(--border); border-radius: 8px; }
+
+.switch { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
+.switch input { display: none; }
+.slider { position: absolute; inset: 0; background: #cbd5e1; border-radius: 22px; transition: .2s; cursor: pointer; }
+.slider::before { content: ''; position: absolute; height: 16px; width: 16px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: .2s; }
+input:checked + .slider { background: var(--green); }
+input:checked + .slider::before { transform: translateX(16px); }
+.switch.lg { width: 52px; height: 28px; }
+.switch.lg .slider::before { height: 22px; width: 22px; left: 3px; top: 3px; }
+.switch.lg input:checked + .slider::before { transform: translateX(24px); }
+
+.services-cat-admin { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+.services-cat-admin h4 { font-size: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; color: var(--navy); }
+.services-cat-admin h4 > span { min-width: 0; }
+.service-row { display: grid; grid-template-columns: 30px 60px 1.5fr 1fr 100px 100px auto auto; gap: 6px; padding: 10px 0; border-bottom: 1px dashed var(--border); align-items: center; }
+.service-row:last-child { border-bottom: 0; }
+@media (max-width: 800px) { .service-row { grid-template-columns: 30px 60px 1fr 90px auto; } .service-row .extra-mobile-hide { display: none; } }
+.service-row input, .service-row select { padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: 0; font-family: inherit; background: white; }
+.icon-trigger { width: 48px; height: 40px; cursor: pointer; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: white; line-height: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 24px; }
+.icon-trigger.small { width: 36px; height: 32px; font-size: 16px; }
+.service-icons { display: flex; gap: 4px; flex-direction: column; align-items: stretch; }
+.cat-reorder, .service-reorder { display: inline-flex; flex-direction: column; gap: 1px; }
+.reorder-btn { width: 22px; height: 16px; padding: 0; border: 1px solid var(--border); background: white; cursor: pointer; font-size: 8px; color: var(--muted); border-radius: 3px; line-height: 1; font-family: inherit; }
+.reorder-btn:hover:not(:disabled) { background: var(--navy); color: white; border-color: var(--navy); }
+.reorder-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.icon-trigger:hover { border-color: var(--navy); background: #fafbfc; }
+.icon-trigger img { width: 100%; height: 100%; object-fit: contain; padding: 2px; }
+
+.cat-add-service-bar { display: flex; justify-content: flex-end; margin-top: 12px; }
+
+.icon-popover { position: fixed; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 14px; box-shadow: 0 10px 40px rgba(0,0,0,.15); z-index: 1500; display: none; max-width: 360px; max-height: calc(100vh - 16px); overflow-y: auto; overscroll-behavior: contain; }
+.icon-popover.show { display: block; }
+.icon-popover .ttl { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; }
+.stock-photo-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+.stock-photo-grid button { border: 1px solid var(--border); background: linear-gradient(135deg, #fafbfc, #f1f3f6); cursor: pointer; padding: 4px; border-radius: 6px; line-height: 0; }
+.stock-photo-grid button:hover { border-color: var(--navy); }
+.stock-photo-grid img { width: 100%; height: 36px; object-fit: contain; display: block; }
+.emoji-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+.emoji-grid button { font-size: 22px; border: 0; background: transparent; cursor: pointer; padding: 6px; border-radius: 6px; line-height: 1; }
+.emoji-grid button:hover { background: #f1f3f6; }
+.icon-divider { display: flex; align-items: center; gap: 8px; margin: 12px 0; color: var(--muted); font-size: 11px; text-transform: uppercase; font-weight: 600; }
+.icon-divider::before, .icon-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.icon-photo-section { display: flex; flex-direction: column; gap: 6px; }
+.icon-photo-section button { font-size: 12px; padding: 8px; }
+.icon-photo-current { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: #fafbfc; }
+.icon-photo-current img { width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: white; }
+.icon-photo-current span { font-size: 11px; color: var(--muted); flex: 1; }
+
+.holidays-list { display: grid; gap: 6px; }
+.holiday-item {
+  display: grid;
+  grid-template-columns: 96px 90px minmax(0, 1fr) auto auto;
+  gap: 12px; align-items: center;
+  padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: white;
+}
+@media (max-width: 700px) { .holiday-item { grid-template-columns: 1fr auto auto; } .holiday-item .h-day { display: none; } }
+.holiday-item.preset { background: #fafbfc; }
+.holiday-item .h-date { font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; font-size: 13px; white-space: nowrap; }
+.holiday-item .h-day { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 600; white-space: nowrap; }
+.holiday-item .h-name { font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.holiday-item .h-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+.holiday-item .h-tag.preset { background: #dbeafe; color: #1e40af; }
+.holiday-item .h-tag.custom { background: #fef3c7; color: #92400e; }
+.holiday-item .h-rm { padding: 4px 10px; font-size: 11px; }
+.holiday-banner { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; }
+.holiday-banner .ico { font-size: 18px; }
+.open-status { border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; border: 1px solid; }
+.open-status .ico { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.open-status.open { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.open-status.open .ico { background: #16a34a; color: white; }
+.open-status.closing { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+.open-status.closing .ico { background: #f97316; color: white; }
+.open-status.closed { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+.open-status.closed .ico { background: #dc2626; color: white; }
+.audit-log { background: #fafbfc; border: 1px solid var(--border); border-radius: 8px; padding: 12px; max-height: 300px; overflow-y: auto; font-size: 12px; }
+.audit-log .entry { padding: 6px 0; border-bottom: 1px dashed var(--border); display: flex; justify-content: space-between; gap: 10px; }
+.audit-log .entry:last-child { border: 0; }
+.audit-log .entry.commit { background: #f0fdf4; padding: 6px 8px; border-radius: 4px; margin: 2px 0; }
+.audit-log .ts { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.lightbox-bg {
+  position: fixed; inset: 0; background: rgba(15,23,41,.92); z-index: 3000;
+  display: none; align-items: center; justify-content: center; padding: 40px;
+  animation: fadeIn 0.2s ease;
+}
+.lightbox-bg.show { display: flex; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.lightbox-bg img { max-width: 90vw; max-height: 85vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,.5); border-radius: 4px; background: white; }
+.lightbox-close { position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgba(255,255,255,.15); color: white; font-size: 28px; cursor: pointer; transition: all .15s; line-height: 1; padding: 0; }
+.lightbox-close:hover { background: rgba(255,255,255,.3); transform: rotate(90deg); }
+.lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border: 0; border-radius: 50%; background: rgba(255,255,255,.15); color: white; font-size: 32px; cursor: pointer; transition: all .15s; line-height: 0; padding: 0; }
+.lightbox-nav:hover { background: rgba(255,255,255,.3); }
+.lightbox-nav.prev { left: 24px; }
+.lightbox-nav.next { right: 24px; }
+.lightbox-caption { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: white; font-size: 13px; background: rgba(0,0,0,.5); padding: 6px 14px; border-radius: 20px; max-width: 80vw; text-align: center; }
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: var(--green); color: white; padding: 12px 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.2); z-index: 2000; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-10px); }
+
+.section-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.section-sub { color: var(--muted); margin-bottom: 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<div class="demo-banner">
+  <strong>WERSJA POGLĄDOWA</strong> — wszystkie treści, kursy, usługi i dane kontaktowe są edytowalne. <a href="#" data-open-admin>Zaloguj się do panelu administratora</a>.
+</div>
+
+<header class="site">
+  <div class="brand">
+    <div class="logo" id="brandLogo">XYZ</div>
+    <div>
+      <h1 id="brandName">Kantor "XYZ"</h1>
+      <div class="slogan" id="brandSlogan">Najlepsze kursy w mieście</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#rates">Kursy</a>
+    <a href="#calc">Kalkulator</a>
+    <a href="#services" id="servicesNavLink">Usługi</a>
+    <a href="#contact">Kontakt</a>
+  </nav>
+</header>
+
+<section class="hero" id="hero">
+  <img class="hero-img" id="heroImg" alt="" style="display:none;">
+  <div class="hero-content">
+    <h2 id="heroName">Kantor "XYZ"</h2>
+    <p id="heroDesc">Wymiana 30+ walut · Skup i sprzedaż złota · Otwarte 6 dni w tygodniu</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="grid grid-2">
+    <div class="card" id="rates">
+      <h3>Kursy walut <span class="live" id="liveBadge">NA ŻYWO</span></h3>
+      <div class="rates-list" id="ratesBody"></div>
+      <div class="rates-updated">
+        <span class="rates-source" id="ratesSource">—</span> · Aktualizacja: <span id="ratesUpdated">—</span>
+      </div>
+    </div>
+
+    <div class="card" id="calc">
+      <h3>Kalkulator <span class="calc-mode-tag" id="calcModeTag">🔒 PLN</span></h3>
+      <div class="calc">
+        <div class="calc-row">
+          <div>
+            <label>Mam (oddaję)</label>
+            <div class="calc-input">
+              <input type="number" id="calcFrom" value="1000" step="0.01" min="0">
+              <select id="calcFromCur"></select>
+            </div>
+          </div>
+        </div>
+        <div class="calc-swap"><button id="calcSwap" title="Zamień">⇅</button></div>
+        <div class="calc-row">
+          <div>
+            <label>Otrzymam</label>
+            <div class="calc-input">
+              <input type="number" id="calcTo" value="0" step="0.01" min="0" readonly style="background:#fafbfc;">
+              <select id="calcToCur"></select>
+            </div>
+          </div>
+        </div>
+        <div class="calc-info" id="calcInfo">—</div>
+        <div class="calc-disclaimer">
+          <span class="ico">ⓘ</span><span>Kursy mają charakter informacyjny i nie stanowią oferty handlowej.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="services" style="margin-top: 20px;">
+    <h3>Inne usługi <span style="font-size:12px;color:var(--muted);font-weight:400;">— skup, sprzedaż i numizmatyka</span></h3>
+    <div id="servicesContainer"></div>
+  </div>
+
+  <div class="grid grid-2" style="margin-top: 20px;" id="contact">
+    <div class="card">
+      <h3>Kontakt i godziny otwarcia</h3>
+      <div id="todayHolidayBanner"></div>
+      <div class="contact-row">
+        <div>
+          <div class="contact-item"><div class="ico">📍</div><div><div class="lbl">Adres</div><div class="val" id="contactAddress">—</div></div></div>
+          <div class="contact-item"><div class="ico">☎</div><div><div class="lbl">Telefon</div><div class="val"><a href="#" id="contactPhone">—</a></div></div></div>
+          <div class="contact-item"><div class="ico">✉</div><div><div class="lbl">Email</div><div class="val"><a href="#" id="contactEmail">—</a></div></div></div>
+        </div>
+        <div><table class="hours-table" id="hoursTable"></table></div>
+      </div>
+    </div>
+    <div class="card location-card">
+      <h3>Lokalizacja</h3>
+      <div class="map-frame" id="mapFrame"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="site">
+  <p id="footerName">© 2026 Kantor Uniwersalny</p>
+  <p class="legal" id="footerLegal">NIP: 000-000-00-00 · Wpis do rejestru działalności kantorowej NBP nr XXXXX</p>
+  <a href="#" class="admin-link" id="adminLink" data-open-admin>admin</a>
+</footer>
+
+<div class="modal-bg" id="loginModal">
+  <div class="modal">
+    <h2>Panel administratora</h2>
+    <div class="sub">Zaloguj się, aby edytować zawartość strony</div>
+    <label>Login</label>
+    <input type="text" id="loginUser" placeholder="admin" autocomplete="off">
+    <label>Hasło</label>
+    <input type="password" id="loginPass" placeholder="••••••" autocomplete="off">
+    <div class="err" id="loginErr"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-ghost" id="loginCancel">Anuluj</button>
+      <button class="btn btn-primary btn-block" id="loginSubmit">Zaloguj</button>
+    </div>
+    <div style="margin-top:14px;font-size:11px;color:var(--muted);text-align:center;">Domyślnie: <strong>admin</strong> / <strong>admin</strong> (do zmiany w panelu)</div>
+  </div>
+</div>
+
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-header">
+    <h2>⚙ Panel administratora</h2>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-save" id="adminSave" disabled>✓ Wszystko zapisane</button>
+      <button class="btn btn-danger" id="adminLogout">⏏ Wyloguj i wróć do strony</button>
+    </div>
+  </div>
+  <div class="dirty-banner" id="dirtyBanner">
+    ⚠ Masz <span id="dirtyCount">0</span> niezapisanych zmian. Kliknij „Zapisz zmiany", żeby zatwierdzić.
+  </div>
+  <div class="admin-tabs">
+    <button data-tab="general" class="active">Ogólne</button>
+    <button data-tab="photo">Zdjęcie</button>
+    <button data-tab="mode">Tryb kalkulatora</button>
+    <button data-tab="currencies">Waluty</button>
+    <button data-tab="services">Usługi</button>
+    <button data-tab="contact">Kontakt</button>
+    <button data-tab="holidays">Dni wolne</button>
+    <button data-tab="audit">Historia zmian</button>
+  </div>
+  <div class="admin-content">
+
+    <div class="admin-section active" data-section="general">
+      <div class="section-title">Dane podstawowe</div>
+      <div class="section-sub">Nazwa, hasło reklamowe, NIP i numer w rejestrze NBP. Zmiany zatwierdzasz przyciskiem „Zapisz zmiany" u góry.</div>
+      <div class="form-row">
+        <div class="form-field"><label>Nazwa kantoru</label><input type="text" id="aName"></div>
+        <div class="form-field"><label>Hasło reklamowe / podtytuł</label><input type="text" id="aSlogan"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Skrót w logo (max 3 znaki)</label><input type="text" id="aLogoText" maxlength="3"></div>
+        <div class="form-field"><label>Opis pod hero (na zdjęciu)</label><input type="text" id="aHeroDesc"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>NIP</label><input type="text" id="aNip" placeholder="000-000-00-00"></div>
+        <div class="form-field"><label>Nr wpisu do rejestru NBP</label><input type="text" id="aNbpReg" placeholder="np. 12345/2024"></div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:24px;border-top:1px solid var(--border);">
+        <div class="section-title" style="font-size:18px;">🔐 Zmiana hasła administratora</div>
+        <div class="section-sub">Zmień hasło logowania do panelu. Login (e-mail powiązany z kontem) pozostaje bez zmian: <strong id="pwdCurrentUser">admin</strong>.</div>
+        <div class="form-row">
+          <div class="form-field"><label>Aktualne hasło</label><input type="password" id="pwdCurrent" autocomplete="current-password"></div>
+          <div class="form-field"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label>Nowe hasło (min. 4 znaki)</label><input type="password" id="pwdNew" autocomplete="new-password"></div>
+          <div class="form-field"><label>Powtórz nowe hasło</label><input type="password" id="pwdConfirm" autocomplete="new-password"></div>
+        </div>
+        <div id="pwdMsg" style="font-size:12px;min-height:18px;margin-bottom:8px;"></div>
+        <button class="btn btn-primary" id="pwdSubmit">Zmień hasło</button>
+      </div>
+    </div>
+
+    <div class="admin-section" data-section="photo">
+      <div class="section-title">Zdjęcie kantoru</div>
+      <div class="section-sub">Wgraj zdjęcie i ustaw, co ma być widoczne. Podgląd <strong>1:1</strong> pokazuje to, co zobaczy klient po zapisaniu zmian.</div>
+      <div class="photo-wysiwyg-wrap">
+        <div class="photo-wysiwyg-label">Podgląd 1:1 — tak zobaczy klient po zapisaniu</div>
+        <div class="photo-wysiwyg" id="photoWysiwyg">
+          <div class="hero" id="heroPreview" style="height: 240px;">
+            <img class="hero-img" id="heroPreviewImg" alt="" style="display:none;">
+            <div class="hero-content">
+              <h2 id="heroPreviewName">Kantor Uniwersalny</h2>
+              <p id="heroPreviewDesc">—</p>
+            </div>
+          </div>
+        </div>
+        <div class="photo-controls">
+          <label>📍 Pionowe wykadrowanie</label>
+          <input type="range" id="photoPosY" min="0" max="100" value="50" step="1">
+          <span id="photoPosYVal" style="font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);min-width:40px;text-align:right;">50%</span>
+        </div>
+        <div class="photo-controls" style="margin-top:8px;">
+          <label>🔍 Powiększenie</label>
+          <input type="range" id="photoZoom" min="100" max="200" value="100" step="1">
+          <span id="photoZoomVal" style="font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);min-width:40px;text-align:right;">100%</span>
+        </div>
+      </div>
+      <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" id="photoUploadBtn">📷 Wgraj nowe zdjęcie</button>
+        <button class="btn btn-ghost" id="photoRemoveBtn">Usuń zdjęcie</button>
+        <input type="file" id="photoInput" accept="image/*" style="display:none;">
+      </div>
+      <div id="photoEmptyHint" style="margin-top:14px; font-size:13px; color:var(--muted);">Brak własnego zdjęcia — wyświetlany jest domyślny obraz stock.</div>
+    </div>
+
+    <div class="admin-section" data-section="mode">
+      <div class="section-title">Tryb kalkulatora</div>
+      <div class="section-sub">Domyślnie kalkulator wymusza, że jedną z walut zawsze jest <strong>PLN</strong>. Zdejmij blokadę, jeśli chcesz pozwolić klientom wymieniać dowolną walutę na dowolną inną.</div>
+      <div class="pln-lock-card" id="plnLockCard">
+        <div class="icon-big" id="plnLockIcon">🔒</div>
+        <div class="body">
+          <h4 id="plnLockTitle">Blokada PLN aktywna</h4>
+          <p id="plnLockDesc">W kalkulatorze klient może wybrać tylko pary, w których jedna ze stron to PLN.</p>
+          <div class="switch-row">
+            <span>Wymuszaj PLN po jednej stronie</span>
+            <label class="switch lg"><input type="checkbox" id="plnLockSwitch" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="pln-lock-card" style="margin-top:14px;background:white;">
+        <div class="icon-big" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);">📊</div>
+        <div class="body">
+          <h4>Pokazywanie marży klientowi</h4>
+          <p>Pod kalkulatorem domyślnie pojawia się informacja typu „Kurs sprzedaży EUR: 4,320 PLN · marża 1.5%". Wyłącz, jeśli nie chcesz ujawniać klientowi swojej marży.</p>
+          <div class="switch-row">
+            <span>Wyświetlaj informację o marży w kalkulatorze</span>
+            <label class="switch lg"><input type="checkbox" id="showCalcMarginSwitch" checked><span class="slider"></span></label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-section" data-section="currencies">
+      <div class="section-title">Waluty</div>
+      <div class="section-sub">Przesuń walutę między <strong>Oferowane</strong> i <strong>Nieoferowane</strong>. Marże ustaw indywidualnie lub zbiorowo.</div>
+      <input type="text" class="cur-search" id="curSearch" placeholder="Szukaj waluty (np. EUR, dolar)…">
+      <div class="bulk-margin">
+        <div class="bulk-margin-title">⚡ Ustaw marże zbiorowo <span class="badge">BULK</span></div>
+        <div class="bulk-margin-row">
+          <div class="form-field"><label>Marża kupna (%)</label><input type="number" id="bulkBuy" step="0.1" min="0" placeholder="np. 1.5"></div>
+          <div class="form-field"><label>Marża sprzedaży (%)</label><input type="number" id="bulkSell" step="0.1" min="0" placeholder="np. 1.5"></div>
+          <div class="form-field"><label>Zastosuj do</label><select id="bulkScope"></select></div>
+          <button class="btn btn-primary" id="bulkApply">Zastosuj</button>
+        </div>
+        <div class="bulk-help">Pozostaw pole puste, żeby nie zmieniać tej marży.</div>
+      </div>
+      <div id="curGroups"></div>
+    </div>
+
+    <div class="admin-section" data-section="services">
+      <div class="section-title">Usługi dodatkowe</div>
+      <div class="section-sub">Każda usługa może mieć zdjęcie produktu lub emoji. Nazwa ma limit 60 znaków, a opis 160 znaków, żeby karty mieściły treść bez psucia układu.</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-gold btn-sm" id="addCategory">+ Dodaj kategorię</button>
+      </div>
+      <div id="servicesAdminList"></div>
+    </div>
+
+    <div class="admin-section" data-section="contact">
+      <div class="section-title">Dane kontaktowe</div>
+      <div class="section-sub">Adres, telefon, email i godziny otwarcia widoczne na stronie.</div>
+      <div class="form-row">
+        <div class="form-field"><label>Adres</label><input type="text" id="aAddress"></div>
+        <div class="form-field"><label>Telefon</label><input type="text" id="aPhone"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-field"><label>Email</label><input type="text" id="aEmail"></div>
+        <div class="form-field">
+          <label>Źródło mapy</label>
+          <div style="display:flex;gap:14px;align-items:center;min-height:38px;flex-wrap:wrap;">
+            <label style="display:flex;gap:6px;align-items:center;font-weight:600;color:var(--text);"><input type="radio" name="aMapMode" id="aMapModeAddress" value="address"> Adres</label>
+            <label style="display:flex;gap:6px;align-items:center;font-weight:600;color:var(--text);"><input type="radio" name="aMapMode" id="aMapModePlace" value="placeId"> Google Place ID</label>
+          </div>
+        </div>
+      </div>
+      <div class="form-row" id="mapPlaceFields">
+        <div class="form-field"><label>Place ID</label><input type="text" id="aPlaceId" placeholder="np. ChIJF386zJDMHkcRt3Kjcv31A3A"></div>
+        <div class="form-field"><label>Nazwa/adres miejsca dla Google</label><input type="text" id="aMapPlaceQuery" placeholder='np. Kantor "Zawisza", Aleje Jerozolimskie, Warszawa, Polska'></div>
+        <div style="grid-column:1/-1;font-size:12px;color:var(--muted);margin-top:-8px;">Dla trybu Place ID Google wymaga też tekstu wyszukiwania miejsca. Wklej nazwę lub adres z narzędzia Place ID Finder.</div>
+      </div>
+      <div class="section-title" style="font-size:16px;margin-top:20px;">Godziny otwarcia</div>
+      <div id="hoursEditor"></div>
+    </div>
+
+    <div class="admin-section" data-section="holidays">
+      <div class="section-title">Dni wolne / święta państwowe</div>
+      <div class="section-sub">Lista dni, w których kantor jest zamknięty. Wstępnie wgrane są polskie święta państwowe na rok 2026 — możesz je wyłączyć lub dodać własne (np. urlop, dni rodzinne).</div>
+
+      <div style="background:linear-gradient(135deg,#f8fafc,#fef9ed);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:18px;">
+        <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;">+ Dodaj własny dzień wolny</div>
+        <div style="display:grid;grid-template-columns:140px 1fr auto;gap:10px;align-items:end;">
+          <div class="form-field"><label>Data</label><input type="date" id="holidayDate"></div>
+          <div class="form-field"><label>Nazwa / powód</label><input type="text" id="holidayName" placeholder="np. Urlop majowy"></div>
+          <button class="btn btn-primary" id="holidayAdd">Dodaj</button>
+        </div>
+      </div>
+
+      <div id="holidaysList"></div>
+    </div>
+
+    <div class="admin-section" data-section="audit">
+      <div class="section-title">Historia zmian</div>
+      <div class="section-sub">Każde kliknięcie „Zapisz zmiany" tworzy wpis z listą wszystkich modyfikacji.</div>
+      <div class="audit-log" id="auditLog"></div>
+    </div>
+  </div>
+</div>
+
+<div class="icon-popover" id="iconPicker">
+  <div class="ttl" id="iconPickerTitle">Wybierz zdjęcie / ikonę</div>
+  <div class="stock-photo-grid" id="stockPhotoGrid"></div>
+  <div class="ttl" style="margin-top:10px;">lub wybierz emoji</div>
+  <div class="emoji-grid" id="emojiGrid"></div>
+  <div class="icon-divider">lub</div>
+  <div class="icon-photo-section" id="iconPhotoSection">
+    <button class="btn btn-primary" id="iconUploadBtn">📷 Wgraj własne zdjęcie</button>
+    <input type="file" id="iconPhotoInput" accept="image/*" style="display:none;">
+    <div id="iconPhotoCurrent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Zapisano</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox-bg" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" title="Zamknij (Esc)">×</button>
+  <button class="lightbox-nav prev" id="lightboxPrev" title="Poprzednie">‹</button>
+  <button class="lightbox-nav next" id="lightboxNext" title="Następne">›</button>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<script>
+const SVG_GOLD_585 = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g585f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff3a8"/><stop offset="30%" stop-color="#ecc34c"/><stop offset="60%" stop-color="#c08a18"/><stop offset="100%" stop-color="#5e4108"/></linearGradient><linearGradient id="g585t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8d6"/><stop offset="100%" stop-color="#d4a93f"/></linearGradient><linearGradient id="g585s" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0)"/><stop offset="50%" stop-color="rgba(255,255,255,0.45)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><polygon points="6,3 94,3 98,11 2,11" fill="url(#g585t)" stroke="#5e4108" stroke-width="0.5"/><rect x="2" y="11" width="96" height="46" rx="1" fill="url(#g585f)" stroke="#5e4108" stroke-width="0.5"/><rect x="4" y="13" width="92" height="3" fill="url(#g585s)"/><rect x="6" y="15" width="88" height="38" fill="none" stroke="#8b6914" stroke-width="0.3"/><text x="50" y="21" text-anchor="middle" fill="#5e4108" font-size="3.4" font-family="Georgia" font-weight="bold" letter-spacing="0.6">FINE GOLD</text><line x1="22" y1="23" x2="78" y2="23" stroke="#5e4108" stroke-width="0.3"/><text x="50" y="35" text-anchor="middle" fill="#5e4108" font-size="11" font-family="Georgia" font-weight="bold">Au 585</text><text x="50" y="43" text-anchor="middle" fill="#5e4108" font-size="3" font-family="monospace" letter-spacing="0.3">No. 014257</text><text x="50" y="48" text-anchor="middle" fill="#5e4108" font-size="2.7" font-family="Georgia" font-style="italic">Polish Mint · 14K</text><line x1="22" y1="50.5" x2="78" y2="50.5" stroke="#5e4108" stroke-width="0.3"/></svg>`;
+const SVG_GOLD_750 = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g750f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff0a0"/><stop offset="30%" stop-color="#f0c020"/><stop offset="60%" stop-color="#a87808"/><stop offset="100%" stop-color="#4a3008"/></linearGradient><linearGradient id="g750t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#e0b020"/></linearGradient><linearGradient id="g750s" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0)"/><stop offset="50%" stop-color="rgba(255,255,255,0.5)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><polygon points="6,3 94,3 98,11 2,11" fill="url(#g750t)" stroke="#4a3008" stroke-width="0.5"/><rect x="2" y="11" width="96" height="46" rx="1" fill="url(#g750f)" stroke="#4a3008" stroke-width="0.5"/><rect x="4" y="13" width="92" height="3" fill="url(#g750s)"/><rect x="6" y="15" width="88" height="38" fill="none" stroke="#7a5a14" stroke-width="0.3"/><text x="50" y="21" text-anchor="middle" fill="#4a3008" font-size="3.4" font-family="Georgia" font-weight="bold" letter-spacing="0.6">FINE GOLD</text><line x1="22" y1="23" x2="78" y2="23" stroke="#4a3008" stroke-width="0.3"/><text x="50" y="35" text-anchor="middle" fill="#4a3008" font-size="11" font-family="Georgia" font-weight="bold">Au 750</text><text x="50" y="43" text-anchor="middle" fill="#4a3008" font-size="3" font-family="monospace" letter-spacing="0.3">No. 075198</text><text x="50" y="48" text-anchor="middle" fill="#4a3008" font-size="2.7" font-family="Georgia" font-style="italic">Polish Mint · 18K</text><line x1="22" y1="50.5" x2="78" y2="50.5" stroke="#4a3008" stroke-width="0.3"/></svg>`;
+const SVG_SILVER = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="agf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#d4d8de"/><stop offset="65%" stop-color="#7a808a"/><stop offset="100%" stop-color="#3a3d42"/></linearGradient><linearGradient id="agt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#bcc1c8"/></linearGradient><linearGradient id="ags" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0)"/><stop offset="50%" stop-color="rgba(255,255,255,0.65)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><polygon points="6,3 94,3 98,11 2,11" fill="url(#agt)" stroke="#3a3d42" stroke-width="0.5"/><rect x="2" y="11" width="96" height="46" rx="1" fill="url(#agf)" stroke="#3a3d42" stroke-width="0.5"/><rect x="4" y="13" width="92" height="3" fill="url(#ags)"/><rect x="6" y="15" width="88" height="38" fill="none" stroke="#5a606a" stroke-width="0.3"/><text x="50" y="21" text-anchor="middle" fill="#2a2d32" font-size="3.4" font-family="Georgia" font-weight="bold" letter-spacing="0.6">FINE SILVER</text><line x1="22" y1="23" x2="78" y2="23" stroke="#2a2d32" stroke-width="0.3"/><text x="50" y="35" text-anchor="middle" fill="#2a2d32" font-size="11" font-family="Georgia" font-weight="bold">Ag 999</text><text x="50" y="43" text-anchor="middle" fill="#2a2d32" font-size="3" font-family="monospace" letter-spacing="0.3">No. 998312</text><text x="50" y="48" text-anchor="middle" fill="#2a2d32" font-size="2.7" font-family="Georgia" font-style="italic">99.9% PURE · 1 oz</text><line x1="22" y1="50.5" x2="78" y2="50.5" stroke="#2a2d32" stroke-width="0.3"/></svg>`;
+const SVG_KRUGERRAND = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="krg" cx="0.4" cy="0.35" r="0.75"><stop offset="0%" stop-color="#fff8d4"/><stop offset="30%" stop-color="#f0d060"/><stop offset="65%" stop-color="#c89820"/><stop offset="100%" stop-color="#5c4408"/></radialGradient><radialGradient id="krgEdge" cx="0.5" cy="0.5" r="0.5"><stop offset="92%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(58,44,8,0.7)"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#krg)" stroke="#3a2c08" stroke-width="0.8"/><circle cx="50" cy="50" r="48" fill="url(#krgEdge)"/><circle cx="50" cy="50" r="42" fill="none" stroke="#5e4810" stroke-width="0.5"/><circle cx="50" cy="50" r="40" fill="none" stroke="#3a2c08" stroke-width="0.3" opacity="0.5"/><path id="krTop" d="M 16,50 A 34,34 0 0 1 84,50" fill="none"/><text font-size="6.5" font-family="Georgia" font-weight="bold" fill="#3a2c08" letter-spacing="1.2"><textPath href="#krTop" startOffset="50%" text-anchor="middle">KRUGERRAND</textPath></text><path id="krBot" d="M 16,52 A 34,34 0 0 0 84,52" fill="none"/><text font-size="4.5" font-family="Georgia" font-weight="bold" fill="#3a2c08" letter-spacing="0.5"><textPath href="#krBot" startOffset="50%" text-anchor="middle">FYNGOUD 1 OZ FINE GOLD</textPath></text><g fill="#3a2c08"><path d="M 30,56 C 32,48 38,46 42,48 C 44,44 48,43 52,46 C 56,44 60,46 62,50 C 66,50 70,52 71,57 C 71,59 70,61 67,61 L 64,67 L 60,67 L 62,62 C 58,63 54,63 50,62 L 47,67 L 43,67 L 45,62 C 41,62 37,61 35,59 L 32,67 L 28,67 L 31,60 Z"/><path d="M 62,50 L 68,46 L 71,49 L 67,53 Z"/><path d="M 67,46 Q 67,42 65,40" stroke="#3a2c08" stroke-width="0.7" fill="none" stroke-linecap="round"/><path d="M 70,46 Q 71,41 70,38" stroke="#3a2c08" stroke-width="0.7" fill="none" stroke-linecap="round"/><path d="M 30,55 Q 26,55 25,52" stroke="#3a2c08" stroke-width="0.6" fill="none" stroke-linecap="round"/></g><circle cx="69" cy="49" r="0.6" fill="#fff8d4"/><text x="50" y="84" text-anchor="middle" fill="#3a2c08" font-size="5" font-family="Georgia" font-weight="bold">2024</text></svg>`;
+const SVG_ZLOTY_ORZEL = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="zog" cx="0.4" cy="0.35" r="0.75"><stop offset="0%" stop-color="#fff0bd"/><stop offset="30%" stop-color="#f4ce58"/><stop offset="65%" stop-color="#bc861a"/><stop offset="100%" stop-color="#5e4408"/></radialGradient><radialGradient id="zoEdge" cx="0.5" cy="0.5" r="0.5"><stop offset="92%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(58,40,8,0.7)"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#zog)" stroke="#3a2808" stroke-width="0.8"/><circle cx="50" cy="50" r="48" fill="url(#zoEdge)"/><circle cx="50" cy="50" r="42" fill="none" stroke="#5e4810" stroke-width="0.5"/><path id="zoTop" d="M 16,50 A 34,34 0 0 1 84,50" fill="none"/><text font-size="5" font-family="Georgia" font-weight="bold" fill="#3a2808" letter-spacing="0.6"><textPath href="#zoTop" startOffset="50%" text-anchor="middle">RZECZPOSPOLITA POLSKA</textPath></text><g fill="#3a2808"><path d="M 41,30 L 43,34 L 46,32 L 50,35 L 54,32 L 57,34 L 59,30 L 59,36 L 41,36 Z"/><circle cx="50" cy="33" r="1" fill="#fff0bd"/><path d="M 50,38 C 47,38 45,40 45,44 L 45,54 C 45,58 47,60 50,60 C 53,60 55,58 55,54 L 55,44 C 55,40 53,38 50,38 Z"/><path d="M 45,42 C 38,42 32,46 28,54 C 26,57 26,60 28,62 C 30,62 33,60 36,57 C 38,54 41,51 44,48 C 45,46 45,44 45,42 Z"/><path d="M 30,57 L 33,54" stroke="#5e4408" stroke-width="0.4" fill="none"/><path d="M 32,60 L 36,55" stroke="#5e4408" stroke-width="0.4" fill="none"/><path d="M 35,61 L 40,55" stroke="#5e4408" stroke-width="0.4" fill="none"/><path d="M 55,42 C 62,42 68,46 72,54 C 74,57 74,60 72,62 C 70,62 67,60 64,57 C 62,54 59,51 56,48 C 55,46 55,44 55,42 Z"/><path d="M 70,57 L 67,54" stroke="#5e4408" stroke-width="0.4" fill="none"/><path d="M 68,60 L 64,55" stroke="#5e4408" stroke-width="0.4" fill="none"/><path d="M 65,61 L 60,55" stroke="#5e4408" stroke-width="0.4" fill="none"/><path d="M 47,60 L 45,68 L 47,66 L 48,70 L 50,67 L 52,70 L 53,66 L 55,68 L 53,60 Z"/><circle cx="50" cy="40" r="2.5"/><path d="M 50,42 L 53,44 L 50,44 Z" fill="#5e4408"/><path d="M 48,64 L 47,70" stroke="#3a2808" stroke-width="0.6"/><path d="M 50,64 L 50,71" stroke="#3a2808" stroke-width="0.6"/><path d="M 52,64 L 53,70" stroke="#3a2808" stroke-width="0.6"/></g><text x="50" y="86" text-anchor="middle" fill="#3a2808" font-size="5" font-family="Georgia" font-weight="bold">1 OZ Au · 999.9</text></svg>`;
+const SVG_DUKAT = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="dkg" cx="0.4" cy="0.35" r="0.75"><stop offset="0%" stop-color="#fff0c0"/><stop offset="40%" stop-color="#d8a830"/><stop offset="80%" stop-color="#8c6810"/><stop offset="100%" stop-color="#42300a"/></radialGradient><radialGradient id="dkEdge" cx="0.5" cy="0.5" r="0.5"><stop offset="90%" stop-color="rgba(0,0,0,0)"/><stop offset="100%" stop-color="rgba(42,28,4,0.75)"/></radialGradient></defs><circle cx="50" cy="50" r="47" fill="url(#dkg)" stroke="#2a1c04" stroke-width="0.8"/><circle cx="50" cy="50" r="47" fill="url(#dkEdge)"/><circle cx="50" cy="50" r="41" fill="none" stroke="#2a1c04" stroke-width="0.4"/><circle cx="50" cy="50" r="39" fill="none" stroke="#5e4408" stroke-width="0.3" opacity="0.5"/><path id="dkTop" d="M 17,50 A 33,33 0 0 1 83,50" fill="none"/><text font-size="5" font-family="Georgia" font-weight="bold" fill="#2a1c04" letter-spacing="0.7"><textPath href="#dkTop" startOffset="50%" text-anchor="middle">DUCATUS POLONIAE</textPath></text><path id="dkBot" d="M 22,55 A 28,28 0 0 0 78,55" fill="none"/><text font-size="3.8" font-family="Georgia" fill="#2a1c04" letter-spacing="0.4"><textPath href="#dkBot" startOffset="50%" text-anchor="middle">A.D. MDCCCXXXI</textPath></text><g fill="#2a1c04"><path d="M 36,32 L 38,26 L 41,30 L 44,24 L 47,30 L 50,22 L 53,30 L 56,24 L 59,30 L 62,26 L 64,32 Z"/><rect x="36" y="32" width="28" height="3"/><circle cx="44" cy="33.5" r="0.8" fill="#fff0c0"/><circle cx="50" cy="33.5" r="0.8" fill="#fff0c0"/><circle cx="56" cy="33.5" r="0.8" fill="#fff0c0"/><path d="M 38,35 Q 38,38 40,40 L 42,38 Q 42,36 42,35 Z"/><path d="M 48,35 Q 48,39 50,41 Q 52,39 52,35 Z"/><path d="M 58,35 Q 58,38 60,40 L 62,38 Q 62,36 62,35 Z"/><path d="M 40,46 L 60,46 L 60,58 Q 50,66 40,58 Z" fill="#5e4408" stroke="#2a1c04" stroke-width="0.6"/><rect x="49" y="48" width="2" height="14"/><rect x="42" y="51" width="16" height="2"/></g><circle cx="20" cy="34" r="0.7" fill="#2a1c04"/><circle cx="80" cy="34" r="0.7" fill="#2a1c04"/><circle cx="20" cy="66" r="0.7" fill="#2a1c04"/><circle cx="80" cy="66" r="0.7" fill="#2a1c04"/><text x="50" y="84" text-anchor="middle" fill="#2a1c04" font-size="3.5" font-family="Georgia" font-style="italic">DUKAT</text></svg>`;
+const SVG_OLD_BANKNOTES = `<svg viewBox="0 0 110 80" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="bn1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8d4a4"/><stop offset="50%" stop-color="#c4a468"/><stop offset="100%" stop-color="#8c6e3a"/></linearGradient><linearGradient id="bn2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d4ccc8"/><stop offset="50%" stop-color="#a89890"/><stop offset="100%" stop-color="#6e605a"/></linearGradient><linearGradient id="bn3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#cce0c4"/><stop offset="100%" stop-color="#7a8a72"/></linearGradient><radialGradient id="cg" cx="0.4" cy="0.3" r="0.75"><stop offset="0%" stop-color="#fff0b8"/><stop offset="50%" stop-color="#d4a93f"/><stop offset="100%" stop-color="#5e4408"/></radialGradient><radialGradient id="cs" cx="0.4" cy="0.3" r="0.75"><stop offset="0%" stop-color="#f8f8fa"/><stop offset="50%" stop-color="#bcc1c8"/><stop offset="100%" stop-color="#3a3d42"/></radialGradient></defs><g transform="rotate(-12 30 50)"><rect x="2" y="32" width="50" height="28" rx="1" fill="url(#bn3)" stroke="#3e3a30" stroke-width="0.5"/><rect x="4" y="34" width="46" height="24" fill="none" stroke="#3e3a30" stroke-width="0.3"/><text x="27" y="48" text-anchor="middle" fill="#3e3a30" font-size="9" font-family="Georgia" font-weight="bold">500</text><text x="27" y="54" text-anchor="middle" fill="#3e3a30" font-size="3" font-family="Georgia">ZŁOTYCH</text><circle cx="10" cy="40" r="3" fill="none" stroke="#3e3a30" stroke-width="0.3"/><circle cx="44" cy="53" r="3" fill="none" stroke="#3e3a30" stroke-width="0.3"/></g><g transform="rotate(-3 50 45)"><rect x="14" y="26" width="50" height="28" rx="1" fill="url(#bn2)" stroke="#3e3a30" stroke-width="0.5"/><rect x="16" y="28" width="46" height="24" fill="none" stroke="#3e3a30" stroke-width="0.3"/><text x="39" y="42" text-anchor="middle" fill="#3e3a30" font-size="9" font-family="Georgia" font-weight="bold">100</text><text x="39" y="48" text-anchor="middle" fill="#3e3a30" font-size="3" font-family="Georgia">ZŁOTYCH</text><circle cx="22" cy="34" r="3" fill="none" stroke="#3e3a30" stroke-width="0.3"/><circle cx="56" cy="47" r="3" fill="none" stroke="#3e3a30" stroke-width="0.3"/></g><g transform="rotate(7 60 55)"><rect x="24" y="38" width="50" height="28" rx="1" fill="url(#bn1)" stroke="#3e3a30" stroke-width="0.5"/><rect x="26" y="40" width="46" height="24" fill="none" stroke="#3e3a30" stroke-width="0.3"/><text x="49" y="54" text-anchor="middle" fill="#3e3a30" font-size="9" font-family="Georgia" font-weight="bold">50</text><text x="49" y="60" text-anchor="middle" fill="#3e3a30" font-size="3" font-family="Georgia">ZŁOTYCH</text><circle cx="32" cy="46" r="3" fill="none" stroke="#3e3a30" stroke-width="0.3"/><circle cx="66" cy="59" r="3" fill="none" stroke="#3e3a30" stroke-width="0.3"/></g><circle cx="93" cy="40" r="13" fill="url(#cg)" stroke="#3a2c08" stroke-width="0.7"/><circle cx="93" cy="40" r="10" fill="none" stroke="#3a2c08" stroke-width="0.3"/><text x="93" y="44" text-anchor="middle" fill="#3a2c08" font-size="6" font-family="Georgia" font-weight="bold">10</text><circle cx="84" cy="60" r="11" fill="url(#cs)" stroke="#3a3d42" stroke-width="0.6"/><circle cx="84" cy="60" r="8.5" fill="none" stroke="#3a3d42" stroke-width="0.3"/><text x="84" y="63" text-anchor="middle" fill="#3a3d42" font-size="5" font-family="Georgia" font-weight="bold">5</text></svg>`;
+
+const _svgToDataUrl = svg => URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+const USER_PHOTOS = {
+  gold_585: 'assets/images/gold-585.webp',
+  gold_750_999: 'assets/images/gold-750-999.webp',
+  royal_mint_5g: 'assets/images/royal-mint-5g.avif',
+  silver_buy: 'assets/images/silver-buy.webp',
+  silver_britannia: 'assets/images/silver-britannia-1oz.png',
+  silver_bar_100g: 'assets/images/silver-bar-100g.webp',
+  krugerrand_a: 'assets/images/krugerrand-1oz-a.webp',
+  krugerrand_b: 'assets/images/krugerrand-1oz-b.jpg',
+  sigismund_a: 'assets/images/dukat-zygmunt-iii-a.jpeg',
+  sigismund_b: 'assets/images/dukat-zygmunt-iii-b.jpeg',
+  grosz_krak_a: 'assets/images/grosz-krakowski-a.jpg',
+  grosz_krak_b: 'assets/images/grosz-krakowski-b.jpg',
+  prl_200_a: 'assets/images/200-zlotych-prl-a.jpg',
+  prl_200_b: 'assets/images/200-zlotych-prl-b.jpg',
+  old_coins: 'assets/images/banknot-1-dolar-1917.webp',
+  old_banknote_iirp: 'assets/images/banknot-2-zlote-1936.jpeg',
+};
+const HERO_STOCK_PHOTO = 'assets/images/hero.png';
+
+const STOCK_PHOTOS = {
+  goldBar585: _svgToDataUrl(SVG_GOLD_585),
+  goldBar750: _svgToDataUrl(SVG_GOLD_750),
+  silverBar: _svgToDataUrl(SVG_SILVER),
+  krugerrand: _svgToDataUrl(SVG_KRUGERRAND),
+  zlotyOrzel: _svgToDataUrl(SVG_ZLOTY_ORZEL),
+  dukat: _svgToDataUrl(SVG_DUKAT),
+  oldBanknotes: _svgToDataUrl(SVG_OLD_BANKNOTES)
+};
+const STOCK_PHOTO_LIST = [
+  { key: 'gold_585', label: 'Stos złotej biżuterii', url: USER_PHOTOS.gold_585, group: 'photo' },
+  { key: 'gold_750_999', label: 'Sztabki złota inwestycyjne', url: USER_PHOTOS.gold_750_999, group: 'photo' },
+  { key: 'royal_mint_5g', label: 'Royal Mint 5g sztabka', url: USER_PHOTOS.royal_mint_5g, group: 'photo' },
+  { key: 'silver_buy', label: 'Skup srebra', url: USER_PHOTOS.silver_buy, group: 'photo' },
+  { key: 'silver_britannia', label: 'Silver Britannia 1 oz', url: USER_PHOTOS.silver_britannia, group: 'photo' },
+  { key: 'silver_bar_100g', label: 'Sztabka srebra 100g', url: USER_PHOTOS.silver_bar_100g, group: 'photo' },
+  { key: 'krugerrand_a', label: 'Krugerrand (a)', url: USER_PHOTOS.krugerrand_a, group: 'photo' },
+  { key: 'krugerrand_b', label: 'Krugerrand (b)', url: USER_PHOTOS.krugerrand_b, group: 'photo' },
+  { key: 'sigismund_a', label: 'Dukat Zygmunta III (a)', url: USER_PHOTOS.sigismund_a, group: 'photo' },
+  { key: 'sigismund_b', label: 'Dukat Zygmunta III (b)', url: USER_PHOTOS.sigismund_b, group: 'photo' },
+  { key: 'grosz_krak_a', label: 'Grosz Krakowski (a)', url: USER_PHOTOS.grosz_krak_a, group: 'photo' },
+  { key: 'grosz_krak_b', label: 'Grosz Krakowski (b)', url: USER_PHOTOS.grosz_krak_b, group: 'photo' },
+  { key: 'prl_200_a', label: '200 zł XXX-PRL (a)', url: USER_PHOTOS.prl_200_a, group: 'photo' },
+  { key: 'prl_200_b', label: '200 zł XXX-PRL (b)', url: USER_PHOTOS.prl_200_b, group: 'photo' },
+  { key: 'old_coins', label: 'Stare monety', url: USER_PHOTOS.old_coins, group: 'photo' },
+  { key: 'old_banknote_iirp', label: 'Banknot 2 zł 1936', url: USER_PHOTOS.old_banknote_iirp, group: 'photo' },
+  { key: 'goldBar585', label: 'Sztabka Au 585 (rys.)', url: STOCK_PHOTOS.goldBar585, group: 'svg' },
+  { key: 'silverBar', label: 'Sztabka Ag 999 (rys.)', url: STOCK_PHOTOS.silverBar, group: 'svg' },
+  { key: 'krugerrand', label: 'Krugerrand (rys.)', url: STOCK_PHOTOS.krugerrand, group: 'svg' },
+  { key: 'oldBanknotes', label: 'Stare banknoty (rys.)', url: STOCK_PHOTOS.oldBanknotes, group: 'svg' }
+];
+
+const ALL_CURRENCIES = [
+  // Major Western currencies
+  { code: 'EUR', name: 'Euro', flag: '🇪🇺', mid: 4.32, region: 'major' },
+  { code: 'USD', name: 'Dolar amerykański', flag: '🇺🇸', mid: 4.05, region: 'major' },
+  { code: 'GBP', name: 'Funt brytyjski', flag: '🇬🇧', mid: 5.12, region: 'major' },
+  { code: 'CHF', name: 'Frank szwajcarski', flag: '🇨🇭', mid: 4.60, region: 'major' },
+  // Nordic
+  { code: 'NOK', name: 'Korona norweska', flag: '🇳🇴', mid: 0.388, region: 'nordic' },
+  { code: 'SEK', name: 'Korona szwedzka', flag: '🇸🇪', mid: 0.395, region: 'nordic' },
+  { code: 'DKK', name: 'Korona duńska', flag: '🇩🇰', mid: 0.580, region: 'nordic' },
+  { code: 'ISK', name: 'Korona islandzka', flag: '🇮🇸', mid: 0.0290, region: 'nordic' },
+  // Central/Eastern Europe
+  { code: 'CZK', name: 'Korona czeska', flag: '🇨🇿', mid: 0.175, region: 'cee' },
+  { code: 'HUF', name: 'Forint węgierski', flag: '🇭🇺', mid: 0.0114, region: 'cee' },
+  { code: 'RON', name: 'Lej rumuński', flag: '🇷🇴', mid: 0.870, region: 'cee' },
+  { code: 'BGN', name: 'Lew bułgarski', flag: '🇧🇬', mid: 2.21, region: 'cee' },
+  { code: 'UAH', name: 'Hrywna ukraińska', flag: '🇺🇦', mid: 0.098, region: 'cee' },
+  { code: 'RUB', name: 'Rubel rosyjski', flag: '🇷🇺', mid: 0.045, region: 'cee' },
+  { code: 'BYN', name: 'Rubel białoruski', flag: '🇧🇾', mid: 1.21, region: 'cee' },
+  { code: 'MDL', name: 'Lej mołdawski', flag: '🇲🇩', mid: 0.225, region: 'cee' },
+  { code: 'TRY', name: 'Lira turecka', flag: '🇹🇷', mid: 0.105, region: 'cee' },
+  { code: 'RSD', name: 'Dinar serbski', flag: '🇷🇸', mid: 0.037, region: 'cee' },
+  { code: 'BAM', name: 'Marka bośniacko-hercegowińska', flag: '🇧🇦', mid: 2.21, region: 'cee' },
+  { code: 'ALL', name: 'Lek albański', flag: '🇦🇱', mid: 0.043, region: 'cee' },
+  { code: 'MKD', name: 'Denar macedoński', flag: '🇲🇰', mid: 0.070, region: 'cee' },
+  // Caucasus & Central Asia
+  { code: 'GEL', name: 'Lari gruzińskie', flag: '🇬🇪', mid: 1.50, region: 'caucasus' },
+  { code: 'AMD', name: 'Dram armeński', flag: '🇦🇲', mid: 0.010, region: 'caucasus' },
+  { code: 'AZN', name: 'Manat azerbejdżański', flag: '🇦🇿', mid: 2.38, region: 'caucasus' },
+  { code: 'KZT', name: 'Tenge kazachskie', flag: '🇰🇿', mid: 0.009, region: 'caucasus' },
+  // Middle East
+  { code: 'AED', name: 'Dirham ZEA', flag: '🇦🇪', mid: 1.10, region: 'me' },
+  { code: 'SAR', name: 'Riyal saudyjski', flag: '🇸🇦', mid: 1.08, region: 'me' },
+  { code: 'QAR', name: 'Rial katarski', flag: '🇶🇦', mid: 1.11, region: 'me' },
+  { code: 'KWD', name: 'Dinar kuwejcki', flag: '🇰🇼', mid: 13.18, region: 'me' },
+  { code: 'BHD', name: 'Dinar bahrajński', flag: '🇧🇭', mid: 10.75, region: 'me' },
+  { code: 'OMR', name: 'Rial omański', flag: '🇴🇲', mid: 10.52, region: 'me' },
+  { code: 'JOD', name: 'Dinar jordański', flag: '🇯🇴', mid: 5.71, region: 'me' },
+  { code: 'ILS', name: 'Szekel izraelski', flag: '🇮🇱', mid: 1.08, region: 'me' },
+  // North Africa
+  { code: 'EGP', name: 'Funt egipski', flag: '🇪🇬', mid: 0.082, region: 'africa' },
+  { code: 'MAD', name: 'Dirham marokański', flag: '🇲🇦', mid: 0.40, region: 'africa' },
+  { code: 'TND', name: 'Dinar tunezyjski', flag: '🇹🇳', mid: 1.30, region: 'africa' },
+  { code: 'DZD', name: 'Dinar algierski', flag: '🇩🇿', mid: 0.030, region: 'africa' },
+  // Sub-Saharan Africa
+  { code: 'ZAR', name: 'Rand południowoafrykański', flag: '🇿🇦', mid: 0.215, region: 'africa' },
+  { code: 'NGN', name: 'Naira nigeryjska', flag: '🇳🇬', mid: 0.0027, region: 'africa' },
+  { code: 'KES', name: 'Szyling kenijski', flag: '🇰🇪', mid: 0.031, region: 'africa' },
+  { code: 'GHS', name: 'Cedi ghańskie', flag: '🇬🇭', mid: 0.27, region: 'africa' },
+  { code: 'ETB', name: 'Birr etiopski', flag: '🇪🇹', mid: 0.030, region: 'africa' },
+  // Asia-Pacific
+  { code: 'JPY', name: 'Jen japoński', flag: '🇯🇵', mid: 0.0265, region: 'asia' },
+  { code: 'CNY', name: 'Juan chiński', flag: '🇨🇳', mid: 0.560, region: 'asia' },
+  { code: 'HKD', name: 'Dolar hongkoński', flag: '🇭🇰', mid: 0.518, region: 'asia' },
+  { code: 'TWD', name: 'Dolar tajwański', flag: '🇹🇼', mid: 0.125, region: 'asia' },
+  { code: 'KRW', name: 'Won południowokoreański', flag: '🇰🇷', mid: 0.00295, region: 'asia' },
+  { code: 'SGD', name: 'Dolar singapurski', flag: '🇸🇬', mid: 3.02, region: 'asia' },
+  { code: 'MYR', name: 'Ringgit malezyjski', flag: '🇲🇾', mid: 0.910, region: 'asia' },
+  { code: 'THB', name: 'Bat tajski', flag: '🇹🇭', mid: 0.115, region: 'asia' },
+  { code: 'VND', name: 'Dong wietnamski', flag: '🇻🇳', mid: 0.00016, region: 'asia' },
+  { code: 'IDR', name: 'Rupia indonezyjska', flag: '🇮🇩', mid: 0.00026, region: 'asia' },
+  { code: 'PHP', name: 'Peso filipińskie', flag: '🇵🇭', mid: 0.072, region: 'asia' },
+  { code: 'INR', name: 'Rupia indyjska', flag: '🇮🇳', mid: 0.0480, region: 'asia' },
+  { code: 'PKR', name: 'Rupia pakistańska', flag: '🇵🇰', mid: 0.014, region: 'asia' },
+  { code: 'BDT', name: 'Taka bangladeska', flag: '🇧🇩', mid: 0.037, region: 'asia' },
+  { code: 'LKR', name: 'Rupia lankijska', flag: '🇱🇰', mid: 0.014, region: 'asia' },
+  // Oceania
+  { code: 'AUD', name: 'Dolar australijski', flag: '🇦🇺', mid: 2.62, region: 'oceania' },
+  { code: 'NZD', name: 'Dolar nowozelandzki', flag: '🇳🇿', mid: 2.41, region: 'oceania' },
+  // Americas
+  { code: 'CAD', name: 'Dolar kanadyjski', flag: '🇨🇦', mid: 2.95, region: 'americas' },
+  { code: 'MXN', name: 'Peso meksykańskie', flag: '🇲🇽', mid: 0.205, region: 'americas' },
+  { code: 'BRL', name: 'Real brazylijski', flag: '🇧🇷', mid: 0.770, region: 'americas' },
+  { code: 'ARS', name: 'Peso argentyńskie', flag: '🇦🇷', mid: 0.0042, region: 'americas' },
+  { code: 'CLP', name: 'Peso chilijskie', flag: '🇨🇱', mid: 0.005, region: 'americas' },
+  { code: 'COP', name: 'Peso kolumbijskie', flag: '🇨🇴', mid: 0.001, region: 'americas' },
+  { code: 'PEN', name: 'Sol peruwiański', flag: '🇵🇪', mid: 1.10 }
+];
+const STOCK_EMOJIS = ['🪙','💰','💵','💴','💶','💷','💳','🏦','💎','🥇','🥈','🥉','✨','⭐','🌟','💫','📈','📉','📊','💼','🪪','📜','🎟','🎫','👑','🔶','🔷','🎁','⚜️','🏅','🎖','💠'];
+const COINS_BANKNOTES_CATEGORY = 'Skup i sprzedaż starych monet i banknotów';
+const DEFAULT_CATEGORIES = ['Sprzedaż i skup złota', 'Sprzedaż i skup srebra', COINS_BANKNOTES_CATEGORY];
+const SERVICE_CATEGORY_DEFAULTS = {
+  'Sprzedaż i skup złota': { unit: 'wycena indywidualna' },
+  'Sprzedaż i skup srebra': { unit: 'wycena na miejscu' },
+  [COINS_BANKNOTES_CATEGORY]: { unit: 'wycena indywidualna' }
+};
+
+function defaultServiceVisuals(category) {
+  const defaults = SERVICE_CATEGORY_DEFAULTS[category] || {};
+  return {
+    icon: '◆',
+    photo: null,
+    photo2: null,
+    unit: defaults.unit || 'PLN'
+  };
+}
+
+const state = {
+  loggedIn: false, ratesSource: 'loading', ratesDate: null,
+  adminUser: 'admin', adminPassword: 'admin',
+  office: {
+    name: 'Kantor "XYZ"', slogan: 'Najlepsze kursy w mieście',
+    heroDesc: 'Wymiana 30+ walut · Skup i sprzedaż złota · Otwarte 6 dni w tygodniu',
+    logoText: 'XYZ', photo: null, photoPosY: 50, photoZoom: 100,
+    address: 'ul. Marszałkowska 100, 00-001 Warszawa', phone: '+48 123 456 789',
+    email: 'kontakt@kantor.pl', mapMode: 'address', placeId: '', mapPlaceQuery: '',
+    nip: '000-000-00-00', nbpRegistry: 'XXXXXX', pllLock: true, showCalcMargin: false,
+    lightboxByCategory: { 'Sprzedaż i skup złota': false, 'Sprzedaż i skup srebra': false, [COINS_BANKNOTES_CATEGORY]: true },
+    hours: { 'Poniedziałek': '9:00–18:00','Wtorek': '9:00–18:00','Środa': '9:00–18:00','Czwartek': '9:00–18:00','Piątek': '9:00–19:00','Sobota': '10:00–14:00','Niedziela': 'Zamknięte' },
+    holidays: [
+      { date: '2026-01-01', name: 'Nowy Rok', preset: true },
+      { date: '2026-01-06', name: 'Trzech Króli', preset: true },
+      { date: '2026-04-05', name: 'Wielkanoc', preset: true },
+      { date: '2026-04-06', name: 'Poniedziałek Wielkanocny', preset: true },
+      { date: '2026-05-01', name: 'Święto Pracy', preset: true },
+      { date: '2026-05-03', name: 'Święto Konstytucji 3 Maja', preset: true },
+      { date: '2026-05-24', name: 'Zielone Świątki', preset: true },
+      { date: '2026-06-04', name: 'Boże Ciało', preset: true },
+      { date: '2026-08-15', name: 'Wniebowzięcie NMP / Święto Wojska Polskiego', preset: true },
+      { date: '2026-11-01', name: 'Wszystkich Świętych', preset: true },
+      { date: '2026-11-11', name: 'Narodowe Święto Niepodległości', preset: true },
+      { date: '2026-12-25', name: 'Boże Narodzenie', preset: true },
+      { date: '2026-12-26', name: 'Drugi Dzień Świąt Bożego Narodzenia', preset: true }
+    ]
+  },
+  currencies: ALL_CURRENCIES.map((c, i) => ({ ...c, buyMargin: 1.5, sellMargin: 1.5, active: i < 16, prevMid: c.mid })),
+  categories: [...DEFAULT_CATEGORIES],
+  services: [
+    { id: 1, icon: null, photo: USER_PHOTOS.gold_585, photo2: null, name: 'Skup Złota Próby 585', desc: 'Stara biżuteria i złoto inwestycyjne niższych prób', price: 285, unit: 'PLN/g', active: true, category: 'Sprzedaż i skup złota' },
+    { id: 2, icon: null, photo: USER_PHOTOS.gold_750_999, photo2: null, name: 'Skup Złota Próby 750 i 999', desc: 'Złoto inwestycyjne najwyższych prób — sztabki i monety. Wycena indywidualna.', price: 0, unit: 'wycena indywidualna', active: true, category: 'Sprzedaż i skup złota' },
+    { id: 3, icon: null, photo: USER_PHOTOS.royal_mint_5g, photo2: null, name: 'The Royal Mint — Złota Sztabka 5 g', desc: 'Mennica: The Royal Mint · Próba: 999.9 · Masa: 5 g · Kraj pochodzenia: Wielka Brytania', price: 1850, unit: 'PLN/szt.', active: true, category: 'Sprzedaż i skup złota' },
+    { id: 4, icon: null, photo: USER_PHOTOS.silver_buy, photo2: null, name: 'Skup Srebra', desc: 'Srebrne monety, sztabki, biżuteria, sztućce — wycena na miejscu', price: 0, unit: 'wycena na miejscu', active: true, category: 'Sprzedaż i skup srebra' },
+    { id: 5, icon: null, photo: USER_PHOTOS.silver_britannia, photo2: null, name: 'Silver Britannia 1 oz', desc: 'Brytyjska srebrna moneta bulionowa · Próba: 999 · Masa: 1 oz (31,10 g)', price: 165, unit: 'PLN/szt.', active: true, category: 'Sprzedaż i skup srebra' },
+    { id: 6, icon: null, photo: USER_PHOTOS.silver_bar_100g, photo2: null, name: 'Sztabka Srebra — Mennica Polska 100 g', desc: 'Próba: 999 · Masa: 100 g · Producent: Mennica Polska S.A.', price: 520, unit: 'PLN/szt.', active: true, category: 'Sprzedaż i skup srebra' },
+    { id: 8, icon: null, photo: USER_PHOTOS.sigismund_a, photo2: USER_PHOTOS.sigismund_b, name: 'Dukat Zygmunta III Wazy', desc: 'Historyczna złota moneta polska z 1621 r. · Cena zależna od wariantu i stanu zachowania', price: 90000, unit: 'PLN/szt.', active: true, category: COINS_BANKNOTES_CATEGORY },
+    { id: 9, icon: null, photo: USER_PHOTOS.grosz_krak_a, photo2: USER_PHOTOS.grosz_krak_b, name: 'Grosz Krakowski', desc: 'Oryginalny grosz krakowski Kazimierza Wielkiego (XIV w.) · bardzo rzadka moneta średniowieczna', price: 92000, unit: 'PLN/szt.', active: true, category: COINS_BANKNOTES_CATEGORY },
+    { id: 10, icon: null, photo: USER_PHOTOS.prl_200_a, photo2: USER_PHOTOS.prl_200_b, name: '200 Złotych — XXX Lat PRL', desc: 'Srebrna moneta okolicznościowa z 1974 r. · Mennica Państwowa', price: 280, unit: 'PLN/szt.', active: true, category: COINS_BANKNOTES_CATEGORY },
+    { id: 11, icon: null, photo: USER_PHOTOS.old_coins, photo2: null, caption: '1$ z 1917 r.', name: 'Banknot 1 dolar z 1917 r.', desc: 'Historyczny banknot kolekcjonerski USA · duży format, seria 1917', price: 1999, unit: 'PLN/szt.', active: true, category: COINS_BANKNOTES_CATEGORY },
+    { id: 12, icon: null, photo: USER_PHOTOS.old_banknote_iirp, photo2: null, caption: '2 Złote z czasów II RP.', name: 'Banknot 2 złote z 1936 r.', desc: 'Banknot z czasów II RP z wizerunkiem Dobrawy · cena zależna od stanu', price: 80, unit: 'PLN/szt.', active: true, category: COINS_BANKNOTES_CATEGORY }
+  ],
+  audit: []
+};
+
+let draft = null, dirty = false;
+function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
+function $(s, c) { return (c || document).querySelector(s); }
+function $$(s, c) { return (c || document).querySelectorAll(s); }
+function fmt(n, d) {
+  // 3 significant figures with trailing zero — e.g. 4.32 → 4,320 / 0.048 → 0,0480 / 0.00016 → 0,000160
+  if (n === 0) return (0).toLocaleString('pl-PL', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const abs = Math.abs(n);
+  let decimals;
+  if (d != null) decimals = d;
+  else if (abs >= 1) decimals = 3;
+  else decimals = Math.ceil(-Math.log10(abs)) + 2;  // # leading zeros after decimal + 2 more digits = 3 sig figs
+  return Number(n).toLocaleString('pl-PL', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+function fmtMoney(n) { return Number(n).toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
+function activeCurrencies(src) { return (src || state).currencies.filter(c => c.active); }
+function rateBuy(cur) { return cur.mid * (1 - cur.buyMargin / 100); }
+function rateSell(cur) { return cur.mid * (1 + cur.sellMargin / 100); }
+function findCur(code, src) { if (code === 'PLN') return null; return (src || state).currencies.find(c => c.code === code); }
+const FLAG_COUNTRY_BY_CURRENCY = {
+  PLN:'pl', EUR:'eu', USD:'us', GBP:'gb', CHF:'ch', NOK:'no', SEK:'se', DKK:'dk', ISK:'is',
+  CZK:'cz', HUF:'hu', RON:'ro', BGN:'bg', UAH:'ua', RUB:'ru', BYN:'by', MDL:'md', TRY:'tr',
+  RSD:'rs', BAM:'ba', ALL:'al', MKD:'mk', GEL:'ge', AMD:'am', AZN:'az', KZT:'kz',
+  AED:'ae', SAR:'sa', QAR:'qa', KWD:'kw', BHD:'bh', OMR:'om', JOD:'jo', ILS:'il',
+  EGP:'eg', MAD:'ma', TND:'tn', DZD:'dz', ZAR:'za', NGN:'ng', KES:'ke', GHS:'gh', ETB:'et',
+  JPY:'jp', CNY:'cn', HKD:'hk', TWD:'tw', KRW:'kr', SGD:'sg', MYR:'my', THB:'th', VND:'vn',
+  IDR:'id', PHP:'ph', INR:'in', PKR:'pk', BDT:'bd', LKR:'lk', AUD:'au', NZD:'nz',
+  CAD:'ca', MXN:'mx', BRL:'br', ARS:'ar', CLP:'cl', COP:'co', PEN:'pe'
+};
+function currencyMark(code) {
+  return `<span class="currency-mark no-flag" aria-label="${code}"><span class="fallback-code">${code}</span></span>`;
+}
+
+const WEEK_DAYS = ['Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota','Niedziela'];
+const SERVICE_NAME_MAX = 44;
+const SERVICE_DESC_MAX = 110;
+const SERVICE_UNIT_MAX = 24;
+const DAY_INDEX_BY_NAME = { 'Niedziela': 0, 'Poniedziałek': 1, 'Wtorek': 2, 'Środa': 3, 'Czwartek': 4, 'Piątek': 5, 'Sobota': 6 };
+function parseHoursRange(h) {
+  if (!h || /zamk/i.test(h)) return null;
+  const m = String(h).match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
+  if (!m) return null;
+  return { open: `${m[1].padStart(2, '0')}:${m[2]}`, close: `${m[3].padStart(2, '0')}:${m[4]}` };
+}
+function minutesOfDay(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+function dateISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function dayNameForDate(d) { return ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'][d.getDay()]; }
+function isHolidayDate(d, holidays) { return holidays.find(h => h.date === dateISO(d)); }
+function getOpenRangeForDate(d, src) {
+  src = src || state;
+  const holiday = isHolidayDate(d, src.office.holidays || []);
+  if (holiday) return { closed: true, holiday };
+  const range = parseHoursRange((src.office.hours || {})[dayNameForDate(d)]);
+  return range ? { closed: false, ...range } : { closed: true };
+}
+function findNextOpenSlot(fromDate, src) {
+  src = src || state;
+  for (let i = 0; i < 21; i++) {
+    const d = new Date(fromDate);
+    d.setDate(fromDate.getDate() + i);
+    const range = getOpenRangeForDate(d, src);
+    if (!range.closed) return { date: d, ...range };
+  }
+  return null;
+}
+function nextOpenPhrase(slot, now) {
+  if (!slot) return 'w następnym dniu otwarcia';
+  const today = dateISO(now), target = dateISO(slot.date);
+  const tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+  if (target === today) return `dziś od ${slot.open}`;
+  if (target === dateISO(tomorrow)) return `jutro od ${slot.open}`;
+  return `w ${slot.date.toLocaleDateString('pl-PL', { weekday:'long', day:'numeric', month:'long' })} od ${slot.open}`;
+}
+function openingStatus(now, src) {
+  src = src || state;
+  now = now || new Date();
+  const range = getOpenRangeForDate(now, src);
+  const current = now.getHours() * 60 + now.getMinutes();
+  if (range.closed) {
+    const next = findNextOpenSlot(new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1), src);
+    return { kind: 'closed', text: `Zamknięte, zapraszamy ${nextOpenPhrase(next, now)}` };
+  }
+  if (!range.closed) {
+    const open = minutesOfDay(range.open), close = minutesOfDay(range.close);
+    if (current >= open && current < close) {
+      const left = close - current;
+      if (left <= 60) return { kind: 'closing', text: `Wkrótce zamykamy — czynne do ${range.close}` };
+      return { kind: 'open', text: `Otwarte — dziś do ${range.close}` };
+    }
+    if (current < open) return { kind: 'closed', text: `Jeszcze zamknięte, zapraszamy dziś od ${range.open}` };
+  }
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const next = findNextOpenSlot(start, src);
+  return { kind: 'closed', text: `Już zamknięte, zapraszamy ${nextOpenPhrase(next, now)}` };
+}
+function mapTarget(src) {
+  src = src || state;
+  const mode = src.office.mapMode || (src.office.placeId ? 'placeId' : 'address');
+  const raw = mode === 'placeId' ? (src.office.placeId || '').trim() : '';
+  const fallbackQuery = src.office.address || src.office.name;
+  if (raw) {
+    const placeMatch = raw.match(/(?:place_id:|query_place_id=)(ChIJ[^&\s]+)/i) || raw.match(/^(ChIJ[^\s&?#]+)/i);
+    const coordMatch = raw.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) || raw.match(/[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) || raw.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
+    const queryMatch = raw.match(/[?&]query=([^&]+)/i) || raw.match(/[?&]q=([^&]+)/i);
+    if (coordMatch) return { query: `${coordMatch[1]},${coordMatch[2]}`, placeId: '' };
+    if (placeMatch) {
+      return {
+        query: (src.office.mapPlaceQuery || '').trim() || (queryMatch ? decodeURIComponent(queryMatch[1].replace(/\+/g, ' ')) : '') || src.office.name || fallbackQuery,
+        placeId: decodeURIComponent(placeMatch[1])
+      };
+    }
+    if (queryMatch) return { query: decodeURIComponent(queryMatch[1].replace(/\+/g, ' ')), placeId: '' };
+    return { query: raw, placeId: '' };
+  }
+  return { query: fallbackQuery, placeId: '' };
+}
+function renderMap() {
+  const target = mapTarget();
+  const q = encodeURIComponent(target.query).replace(/%20/g, '+');
+  const frame = $('#mapFrame');
+  const placeParam = target.placeId ? `&query_place_id=${encodeURIComponent(target.placeId)}` : '';
+  const src = `https://maps.google.com/maps?q=${q}${placeParam}&z=16&hl=pl&output=embed`;
+  const current = frame.querySelector('iframe');
+  if (current && current.getAttribute('src') === src) return;
+  frame.innerHTML = `<iframe title="Mapa dojazdu do ${state.office.name.replace(/"/g, '&quot;')}" referrerpolicy="no-referrer-when-downgrade" src="${src}"></iframe>`;
+}
+
+// Compute actual diff between draft and committed state.
+// This is the source of truth for the dirty counter — never inflated by repeated edits to the same field.
+function computeDirtyChanges() {
+  if (!draft) return [];
+  const changes = [];
+  // Office fields
+  ['name','slogan','heroDesc','logoText','photo','photoPosY','photoZoom','address','phone','email','mapMode','placeId','mapPlaceQuery','nip','nbpRegistry','pllLock','showCalcMargin'].forEach(f => {
+    if (JSON.stringify(draft.office[f]) !== JSON.stringify(state.office[f])) {
+      changes.push({ action: f === 'pllLock' ? `Tryb kalkulatora: ${draft.office.pllLock ? 'blokada PLN' : 'blokada zdjęta'}` : `Edycja: ${f}` });
+    }
+  });
+  // Per-category lightbox toggles
+  const stLb = state.office.lightboxByCategory || {};
+  const drLb = draft.office.lightboxByCategory || {};
+  const allCats = new Set([...Object.keys(stLb), ...Object.keys(drLb)]);
+  allCats.forEach(c => {
+    const sV = stLb[c] !== false; const dV = drLb[c] !== false;
+    if (sV !== dV) changes.push({ action: `Lightbox „${c}": ${dV ? 'włączony' : 'wyłączony'}` });
+  });
+  // Hours
+  Object.keys(draft.office.hours).forEach(d => {
+    if (draft.office.hours[d] !== state.office.hours[d]) changes.push({ action: `Godziny ${d}` });
+  });
+  // Currencies
+  draft.currencies.forEach(dc => {
+    const sc = state.currencies.find(c => c.code === dc.code);
+    if (!sc) return;
+    if (dc.active !== sc.active) changes.push({ action: `${dc.active ? 'Włączono' : 'Wyłączono'} ${dc.code}` });
+    if (dc.buyMargin !== sc.buyMargin) changes.push({ action: `Marża kupna ${dc.code} → ${dc.buyMargin}%` });
+    if (dc.sellMargin !== sc.sellMargin) changes.push({ action: `Marża sprzedaży ${dc.code} → ${dc.sellMargin}%` });
+  });
+  // Categories — added/removed
+  state.categories.filter(c => !draft.categories.includes(c)).forEach(c => changes.push({ action: `Usunięto kategorię: ${c}` }));
+  draft.categories.filter(c => !state.categories.includes(c)).forEach(c => changes.push({ action: `Dodano kategorię: ${c}` }));
+  // Categories — order change (only count categories present in both)
+  const stCats = state.categories.filter(c => draft.categories.includes(c));
+  const drCats = draft.categories.filter(c => state.categories.includes(c));
+  if (JSON.stringify(stCats) !== JSON.stringify(drCats)) {
+    changes.push({ action: 'Zmieniono kolejność kategorii' });
+  }
+  // Service order within each category (compare common services only)
+  draft.categories.forEach(cat => {
+    if (!state.categories.includes(cat)) return;
+    const stIds = state.services.filter(s => s.category === cat).map(s => s.id);
+    const drIds = draft.services.filter(s => s.category === cat).map(s => s.id);
+    const stCommon = stIds.filter(id => drIds.includes(id));
+    const drCommon = drIds.filter(id => stIds.includes(id));
+    if (stCommon.length > 1 && JSON.stringify(stCommon) !== JSON.stringify(drCommon)) {
+      changes.push({ action: `Zmieniono kolejność usług w „${cat}"` });
+    }
+  });
+  // Holidays
+  const sH = (state.office.holidays || []).map(h => `${h.date}|${h.name}`).sort();
+  const dH = (draft.office.holidays || []).map(h => `${h.date}|${h.name}`).sort();
+  if (JSON.stringify(sH) !== JSON.stringify(dH)) {
+    const added = dH.filter(x => !sH.includes(x)).length;
+    const removed = sH.filter(x => !dH.includes(x)).length;
+    if (added) changes.push({ action: `Dodano dni wolne (${added})` });
+    if (removed) changes.push({ action: `Usunięto dni wolne (${removed})` });
+  }
+  // Services — added / removed / modified per id
+  const stateIds = new Set(state.services.map(s => s.id));
+  const draftIds = new Set(draft.services.map(s => s.id));
+  state.services.filter(s => !draftIds.has(s.id)).forEach(s => changes.push({ action: `Usunięto usługę: ${s.name}` }));
+  draft.services.filter(s => !stateIds.has(s.id)).forEach(s => changes.push({ action: `Dodano usługę: ${s.name}` }));
+  draft.services.forEach(ds => {
+    const ss = state.services.find(s => s.id === ds.id);
+    if (!ss) return;
+    ['name','desc','price','unit','active','icon','photo','photo2','caption','caption2','category'].forEach(f => {
+      if (ds[f] !== ss[f]) changes.push({ action: `Edycja usługi „${ds.name}" (${f})` });
+    });
+  });
+  return changes;
+}
+
+// Single source of truth — call this after any edit. Counter shows actual diff.
+function refreshDirtyState() {
+  const changes = computeDirtyChanges();
+  const count = changes.length;
+  const btn = $('#adminSave');
+  if (count > 0) {
+    dirty = true;
+    btn.disabled = false;
+    btn.textContent = `💾 Zapisz zmiany (${count})`;
+    btn.classList.add('dirty');
+    $('#dirtyBanner').classList.add('show');
+    $('#dirtyCount').textContent = count;
+  } else {
+    dirty = false;
+    btn.disabled = true;
+    btn.textContent = '✓ Wszystko zapisane';
+    btn.classList.remove('dirty');
+    $('#dirtyBanner').classList.remove('show');
+  }
+}
+// Backwards-compat wrapper for existing call sites.
+function pendingLog(_action) { refreshDirtyState(); }
+function markDirty() { refreshDirtyState(); }
+function clearDirty() { refreshDirtyState(); }
+
+function saveChanges() {
+  if (!draft) return;
+  const changes = computeDirtyChanges();
+  if (!changes.length) return;
+  const count = changes.length;
+  // Commit draft → state
+  state.office = deepClone(draft.office);
+  draft.currencies.forEach(dc => { const sc = state.currencies.find(c => c.code === dc.code); if (sc) { sc.active = dc.active; sc.buyMargin = dc.buyMargin; sc.sellMargin = dc.sellMargin; } });
+  state.categories = deepClone(draft.categories);
+  state.services = deepClone(draft.services);
+  // Audit log built from real diff (no duplicates from repeated edits)
+  const ts = new Date().toLocaleString('pl-PL');
+  changes.slice().reverse().forEach(c => state.audit.unshift({ ts, user: 'admin', action: c.action }));
+  state.audit.unshift({ ts, user: 'admin', action: `══ Zapisano sesję edycji (${count} ${count === 1 ? 'zmiana' : count < 5 ? 'zmiany' : 'zmian'}) ══`, commit: true });
+  if (state.audit.length > 100) state.audit.length = 100;
+  renderHeader(); renderRates(); renderContact(); renderMap(); renderServicesFrontend(); renderCalcSelects(); recalc();
+  // Reset draft so diff = 0
+  draft = deepClone(state);
+  refreshDirtyState();
+  renderAuditLog();
+  toast(`Zapisano ${count} zmian`);
+}
+function logoutAndExit() {
+  const changes = computeDirtyChanges();
+  if (changes.length) { if (!confirm(`Masz ${changes.length} niezapisanych zmian. Wyjść bez zapisywania?`)) return; }
+  state.loggedIn = false; draft = null;
+  $('#adminPanel').classList.remove('show'); resetBodyScrollLock();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+$('#adminSave').addEventListener('click', saveChanges);
+$('#adminLogout').addEventListener('click', logoutAndExit);
+
+async function loadFromCoinbase() {
+  const r = await fetch('https://api.coinbase.com/v2/exchange-rates?currency=PLN', { cache: 'no-store' });
+  if (!r.ok) throw new Error('CB ' + r.status);
+  const json = await r.json();
+  const rates = json && json.data && json.data.rates;
+  if (!rates) throw new Error('CB shape');
+  let updated = 0;
+  state.currencies.forEach(c => { const rate = parseFloat(rates[c.code]); if (rate && rate > 0 && isFinite(rate)) { c.prevMid = c.mid; c.mid = 1 / rate; updated++; } });
+  if (!updated) throw new Error('CB no match');
+  return updated;
+}
+async function loadFromNBP() {
+  const [a, b] = await Promise.all([
+    fetch('https://api.nbp.pl/api/exchangerates/tables/a?format=json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    fetch('https://api.nbp.pl/api/exchangerates/tables/b?format=json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null)
+  ]);
+  const merged = []; if (a && a[0]) merged.push(...a[0].rates); if (b && b[0]) merged.push(...b[0].rates);
+  if (!merged.length) throw new Error('NBP empty');
+  let updated = 0;
+  state.currencies.forEach(c => { const f = merged.find(r => r.code === c.code); if (f) { c.prevMid = c.mid; c.mid = f.mid; updated++; } });
+  if (!updated) throw new Error('NBP no match');
+  state.ratesDate = (a && a[0] && a[0].effectiveDate) || new Date().toISOString().slice(0, 10);
+  return updated;
+}
+async function loadRates() {
+  try { await loadFromCoinbase(); state.ratesSource = 'Coinbase'; state.ratesDate = new Date().toISOString(); return; } catch (e) {}
+  try { await loadFromNBP(); state.ratesSource = 'NBP'; return; } catch (e) {}
+  state.ratesSource = 'simulated';
+}
+function fluctuate() {
+  state.currencies.forEach(c => { c.prevMid = c.mid; const drift = (Math.random() - 0.5) * 0.004; c.mid = +(c.mid * (1 + drift)).toFixed(c.mid < 0.1 ? 5 : 4); });
+  renderRates(); recalc();
+}
+function updateLiveBadge() {
+  const badge = $('#liveBadge'), src = $('#ratesSource');
+  if (state.ratesSource === 'Coinbase') { badge.classList.remove('simulated'); badge.textContent = 'NA ŻYWO'; src.textContent = 'Źródło: Coinbase Exchange Rates'; }
+  else if (state.ratesSource === 'NBP') { badge.classList.remove('simulated'); badge.textContent = 'NBP'; src.textContent = `Źródło: NBP API${state.ratesDate ? ' · ' + state.ratesDate : ''}`; }
+  else if (state.ratesSource === 'simulated') { badge.classList.add('simulated'); badge.textContent = 'SYM.'; src.innerHTML = `Źródło: <span class="badge sim">SYMULACJA</span> sandbox blokuje api`; }
+  else { badge.textContent = '...'; src.textContent = 'Ładowanie...'; }
+}
+
+function applyHeroPhoto(heroEl, imgEl, src) {
+  src = src || state;
+  const photo = src.office.photo || HERO_STOCK_PHOTO;
+  const posY = src.office.photo ? src.office.photoPosY : 50;
+  const zoom = src.office.photo ? src.office.photoZoom : 100;
+  imgEl.src = photo; imgEl.style.display = 'block';
+  imgEl.style.objectPosition = `center ${posY}%`;
+  imgEl.style.transform = `scale(${zoom / 100})`;
+  imgEl.style.transformOrigin = `center ${posY}%`;
+  heroEl.style.background = '#0c2340';
+}
+
+function renderHeader() {
+  $('#brandName').textContent = state.office.name;
+  $('#brandSlogan').textContent = state.office.slogan;
+  $('#brandLogo').textContent = state.office.logoText;
+  $('#heroName').textContent = state.office.name;
+  $('#heroDesc').textContent = state.office.heroDesc;
+  $('#footerName').textContent = `© 2026 ${state.office.name}`;
+  $('#footerLegal').textContent = `NIP: ${state.office.nip} · Wpis do rejestru działalności kantorowej NBP nr ${state.office.nbpRegistry}`;
+  applyHeroPhoto($('#hero'), $('#heroImg'), state);
+  renderMap();
+}
+
+function renderRates() {
+  const wrap = $('#ratesBody'); wrap.innerHTML = '';
+  const list = activeCurrencies(state);
+  if (!list.length) { wrap.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);grid-column:1/-1;">Brak aktywnych walut.</div>'; }
+  else {
+    list.forEach(c => {
+      const buy = rateBuy(c), sell = rateSell(c);
+      wrap.innerHTML += `<div class="rate-item">
+        ${currencyMark(c.code)}
+        <strong class="rate-code">${c.code}</strong>
+        <div class="rate-side"><div class="rate-lbl">Kupno</div><div class="rate-val">${fmt(buy)}</div></div>
+        <div class="rate-side"><div class="rate-lbl">Sprz.</div><div class="rate-val">${fmt(sell)}</div></div>
+      </div>`;
+    });
+  }
+  $('#ratesUpdated').textContent = new Date().toLocaleTimeString('pl-PL');
+  updateLiveBadge();
+}
+
+function renderContact() {
+  $('#contactAddress').textContent = state.office.address;
+  const phoneA = $('#contactPhone'); phoneA.textContent = state.office.phone; phoneA.href = 'tel:' + state.office.phone.replace(/\s/g, '');
+  const mailA = $('#contactEmail'); mailA.textContent = state.office.email; mailA.href = 'mailto:' + state.office.email;
+  const now = new Date();
+  const todayISO = dateISO(now);
+  const todayName = ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'][now.getDay()];
+  const holidays = state.office.holidays || [];
+  const status = openingStatus(now, state);
+  const banner = $('#todayHolidayBanner');
+  const statusIcon = status.kind === 'open' ? '✓' : status.kind === 'closing' ? '!' : '×';
+  banner.innerHTML = `<div class="open-status ${status.kind}"><span class="ico">${statusIcon}</span><div><strong>${status.text}</strong></div></div>`;
+  // Hours table, with holiday-of-the-week override
+  let html = '';
+  // Compute date for each weekday in current week
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7)); // Monday
+  WEEK_DAYS.forEach((d, i) => {
+    const date = new Date(weekStart); date.setDate(weekStart.getDate() + i);
+    const iso = dateISO(date);
+    const h = (state.office.hours || {})[d] || '';
+    const holiday = holidays.find(x => x.date === iso);
+    const isToday = d === todayName;
+    let display = h;
+    let extra = '';
+    if (holiday) { display = '<span style="color:var(--red);font-weight:700;">Zamknięte</span>'; extra = `<span style="font-size:10px;color:var(--muted);font-weight:400;display:block;">🎉 ${holiday.name}</span>`; }
+    html += `<tr class="${isToday ? 'today' : ''}"><td>${d}${extra}</td><td>${display}</td></tr>`;
+  });
+  $('#hoursTable').innerHTML = html;
+}
+
+function serviceVisualHtml(s, isSingleInCategory) {
+  const lbMap = state.office.lightboxByCategory || {};
+  const lbOn = lbMap[s.category] !== false;
+  const noZoom = lbOn ? '' : ' no-zoom';
+  const caption1 = (s.caption || s.name).replace(/"/g, '&quot;');
+  const caption2 = (s.caption2 || s.caption || s.name).replace(/"/g, '&quot;');
+  if (s.photo && s.photo2) {
+    return `<div class="service-photo-col two${noZoom}">
+      <img class="service-photo" src="${s.photo}" alt="${s.name}" data-lb-src="${s.photo}" data-lb-caption="${caption1}" data-lb-group="${s.id}" data-lb-idx="0">
+      <img class="service-photo" src="${s.photo2}" alt="${s.name}" data-lb-src="${s.photo2}" data-lb-caption="${caption2}" data-lb-group="${s.id}" data-lb-idx="1">
+    </div>`;
+  }
+  if (s.photo) return `<div class="service-photo-col${noZoom}"><img class="service-photo" src="${s.photo}" alt="${s.name}" data-lb-src="${s.photo}" data-lb-caption="${caption1}" data-lb-group="${s.id}" data-lb-idx="0"></div>`;
+  return `<div class="service-photo-col icon-only"><div class="service-icon">${s.icon || '◆'}</div></div>`;
+}
+
+const expandedCategories = new Set();
+function renderServicesFrontend() {
+  const wrap = $('#servicesContainer'); wrap.innerHTML = '';
+  const section = $('#services');
+  const navLink = $('#servicesNavLink');
+  const seen = new Set();
+  const active = state.services.filter(s => s.active);
+  const orderedCats = [...state.categories.filter(c => active.some(s => s.category === c)), ...active.map(s => s.category).filter((c, i, a) => a.indexOf(c) === i && !state.categories.includes(c))];
+  if (!active.length) {
+    section.style.display = 'none';
+    if (navLink) navLink.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+  if (navLink) navLink.style.display = '';
+  orderedCats.forEach(cat => {
+    if (seen.has(cat)) return; seen.add(cat);
+    const allItems = active.filter(s => s.category === cat);
+    if (!allItems.length) return;
+    const totalCount = allItems.length;
+    const isExpanded = expandedCategories.has(cat);
+    const items = (totalCount > 9 && !isExpanded) ? allItems.slice(0, 9) : allItems;
+    const sizeClass = totalCount === 1 ? 'size-1' : totalCount === 2 ? 'size-2' : totalCount === 3 ? 'size-3' : 'size-many';
+    const isSingle = totalCount === 1;
+    const sec = document.createElement('div'); sec.className = 'services-cat';
+    sec.innerHTML = `
+      <div class="services-cat-head"><div class="name">${cat}</div><div class="count">${totalCount}</div></div>
+      <div class="services-grid ${sizeClass}">
+        ${items.map(s => `
+          <div class="service">
+            ${serviceVisualHtml(s, isSingle)}
+            <div class="body">
+              <div class="service-name">${s.name}</div>
+              ${s.desc ? `<div class="service-desc">${s.desc}</div>` : ''}
+              <div class="service-price-row">${s.price > 0 ? `<span class="service-price">${fmtMoney(s.price)}</span> ` : ''}<span class="service-unit">${s.unit}</span></div>
+            </div>
+          </div>`).join('')}
+      </div>
+      ${totalCount > 9 ? `<div class="cat-expand-bar"><button class="cat-expand-btn" data-toggle-cat="${cat.replace(/"/g,'&quot;')}">${isExpanded ? `▲ Pokaż mniej` : `▼ Pokaż więcej (${totalCount - 9})`}</button></div>` : ''}`;
+    wrap.appendChild(sec);
+  });
+  // Wire expand/collapse buttons
+  wrap.querySelectorAll('[data-toggle-cat]').forEach(b => b.addEventListener('click', () => {
+    const c = b.dataset.toggleCat;
+    if (expandedCategories.has(c)) expandedCategories.delete(c); else expandedCategories.add(c);
+    renderServicesFrontend();
+  }));
+}
+
+function renderCalcSelects() {
+  const fromSel = $('#calcFromCur'), toSel = $('#calcToCur');
+  const prevFrom = fromSel.value, prevTo = toSel.value;
+  const opts = `<option value="PLN">PLN</option>` + activeCurrencies(state).map(c => `<option value="${c.code}">${c.code} — ${c.name}</option>`).join('');
+  fromSel.innerHTML = opts; toSel.innerHTML = opts;
+  if (state.office.pllLock) {
+    if (prevFrom && prevFrom !== 'PLN' && (!prevTo || prevTo !== 'PLN')) { fromSel.value = prevFrom; toSel.value = 'PLN'; }
+    else if (prevTo && prevTo !== 'PLN') { fromSel.value = 'PLN'; toSel.value = prevTo; }
+    else { fromSel.value = 'PLN'; toSel.value = activeCurrencies(state)[0]?.code || 'EUR'; }
+    $('#calcModeTag').innerHTML = '🔒 PLN'; $('#calcModeTag').classList.remove('unlocked');
+  } else {
+    fromSel.value = prevFrom || 'EUR'; toSel.value = prevTo || 'USD';
+    $('#calcModeTag').innerHTML = '🔓 dowolna ↔ dowolna'; $('#calcModeTag').classList.add('unlocked');
+  }
+}
+
+function recalc() {
+  const fromCode = $('#calcFromCur').value, toCode = $('#calcToCur').value;
+  const amt = parseFloat($('#calcFrom').value) || 0;
+  const fromCur = findCur(fromCode), toCur = findCur(toCode);
+  let result, info;
+  const showM = state.office.showCalcMargin !== false;
+  if (fromCode === toCode) { result = amt; info = 'Wybierz różne waluty.'; }
+  else if (!fromCur && toCur) { const r = rateSell(toCur); result = amt / r; info = `Kurs sprzedaży <strong>${toCode}</strong>: <strong>${fmt(r)} PLN</strong>${showM ? ` · marża ${toCur.sellMargin}%` : ''}`; }
+  else if (fromCur && !toCur) { const r = rateBuy(fromCur); result = amt * r; info = `Kurs kupna <strong>${fromCode}</strong>: <strong>${fmt(r)} PLN</strong>${showM ? ` · marża ${fromCur.buyMargin}%` : ''}`; }
+  else if (fromCur && toCur) { const pln = amt * rateBuy(fromCur); result = pln / rateSell(toCur); info = `Przelicznik przez PLN: <strong>${fromCode}→PLN</strong> ${fmt(rateBuy(fromCur))} · <strong>PLN→${toCode}</strong> ${fmt(rateSell(toCur))}`; }
+  else { result = amt; info = 'PLN → PLN'; }
+  $('#calcTo').value = result.toFixed(2);
+  $('#calcInfo').innerHTML = info;
+}
+
+$('#calcFrom').addEventListener('input', recalc);
+$('#calcFromCur').addEventListener('change', () => {
+  if (state.office.pllLock) {
+    const f = $('#calcFromCur'), t = $('#calcToCur');
+    if (f.value !== 'PLN' && t.value !== 'PLN') t.value = 'PLN';
+    if (f.value === 'PLN' && t.value === 'PLN') t.value = activeCurrencies(state)[0]?.code || 'EUR';
+  }
+  recalc();
+});
+$('#calcToCur').addEventListener('change', () => {
+  if (state.office.pllLock) {
+    const f = $('#calcFromCur'), t = $('#calcToCur');
+    if (f.value !== 'PLN' && t.value !== 'PLN') f.value = 'PLN';
+    if (f.value === 'PLN' && t.value === 'PLN') f.value = activeCurrencies(state)[0]?.code || 'EUR';
+  }
+  recalc();
+});
+$('#calcSwap').addEventListener('click', () => { const f = $('#calcFromCur'), t = $('#calcToCur'); [f.value, t.value] = [t.value, f.value]; recalc(); });
+
+// Scroll lock counter — prevents body scrolling while modals open
+let scrollLockCount = 0;
+function lockBodyScroll() {
+  if (scrollLockCount === 0) {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+  }
+  scrollLockCount++;
+}
+function unlockBodyScroll() {
+  scrollLockCount = Math.max(0, scrollLockCount - 1);
+  if (scrollLockCount === 0) {
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+  }
+}
+function resetBodyScrollLock() {
+  scrollLockCount = 0;
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
+}
+
+function showLoginModal(e) {
+  if (e) e.preventDefault();
+  $('#loginModal').classList.add('show');
+  lockBodyScroll();
+  $('#loginUser').focus();
+}
+$$('[data-open-admin]').forEach(link => link.addEventListener('click', showLoginModal));
+$('#loginCancel').addEventListener('click', () => { $('#loginModal').classList.remove('show'); unlockBodyScroll(); });
+$('#loginSubmit').addEventListener('click', tryLogin);
+$('#loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+function tryLogin() {
+  const u = $('#loginUser').value.trim(), p = $('#loginPass').value;
+  if (u === state.adminUser && p === state.adminPassword) {
+    state.loggedIn = true; $('#loginModal').classList.remove('show');
+    $('#loginErr').textContent = ''; $('#loginUser').value = ''; $('#loginPass').value = '';
+    unlockBodyScroll();
+    openAdmin();
+  } else { $('#loginErr').textContent = 'Niepoprawne dane logowania (demo: admin / admin)'; }
+}
+
+function openAdmin() {
+  draft = deepClone(state); dirty = false;
+  $('#adminPanel').classList.add('show'); lockBodyScroll();
+  fillAdminForms(); renderCurrenciesAdmin(); renderServicesAdmin(); renderHoursEditor(); renderHolidaysAdmin(); renderAuditLog();
+  switchTab('general'); clearDirty();
+}
+$$('.admin-tabs button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+function switchTab(tab) {
+  $$('.admin-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  $$('.admin-section').forEach(s => s.classList.toggle('active', s.dataset.section === tab));
+  if (tab === 'audit') renderAuditLog();
+  if (tab === 'holidays') renderHolidaysAdmin();
+}
+
+function fillAdminForms() {
+  $('#aName').value = draft.office.name; $('#aSlogan').value = draft.office.slogan;
+  $('#aHeroDesc').value = draft.office.heroDesc; $('#aLogoText').value = draft.office.logoText;
+  $('#aAddress').value = draft.office.address; $('#aPhone').value = draft.office.phone;
+  $('#aEmail').value = draft.office.email; $('#aPlaceId').value = draft.office.placeId;
+  $('#aMapPlaceQuery').value = draft.office.mapPlaceQuery || '';
+  updateMapModeUI();
+  $('#aNip').value = draft.office.nip; $('#aNbpReg').value = draft.office.nbpRegistry;
+  $('#pwdCurrentUser').textContent = state.adminUser;
+  $('#plnLockSwitch').checked = draft.office.pllLock; updatePlnLockUI();
+  $('#showCalcMarginSwitch').checked = draft.office.showCalcMargin !== false;
+  $('#photoPosY').value = draft.office.photoPosY; $('#photoPosYVal').textContent = draft.office.photoPosY + '%';
+  $('#photoZoom').value = draft.office.photoZoom; $('#photoZoomVal').textContent = draft.office.photoZoom + '%';
+  applyHeroPhoto($('#heroPreview'), $('#heroPreviewImg'), draft);
+  $('#heroPreviewName').textContent = draft.office.name;
+  $('#heroPreviewDesc').textContent = draft.office.heroDesc;
+  $('#photoEmptyHint').style.display = draft.office.photo ? 'none' : '';
+  $('#photoRemoveBtn').style.display = draft.office.photo ? '' : 'none';
+}
+
+function updateMapModeUI() {
+  const mode = draft && draft.office.mapMode === 'placeId' ? 'placeId' : 'address';
+  $('#aMapModeAddress').checked = mode === 'address';
+  $('#aMapModePlace').checked = mode === 'placeId';
+  $('#mapPlaceFields').style.display = mode === 'placeId' ? '' : 'none';
+}
+
+['aName','aSlogan','aHeroDesc','aLogoText','aNip','aNbpReg','aAddress','aPhone','aEmail','aPlaceId','aMapPlaceQuery'].forEach(id => {
+  $('#' + id).addEventListener('input', () => {
+    const map = { aName: 'name', aSlogan: 'slogan', aHeroDesc: 'heroDesc', aLogoText: 'logoText', aNip: 'nip', aNbpReg: 'nbpRegistry', aAddress: 'address', aPhone: 'phone', aEmail: 'email', aPlaceId: 'placeId', aMapPlaceQuery: 'mapPlaceQuery' };
+    const field = map[id]; let v = $('#' + id).value;
+    if (id === 'aLogoText') v = v.toUpperCase();
+    draft.office[field] = v;
+    if (id === 'aName') $('#heroPreviewName').textContent = v || 'Kantor';
+    if (id === 'aHeroDesc') $('#heroPreviewDesc').textContent = v || '—';
+    pendingLog(`Edycja: ${field}`);
+  });
+});
+$$('input[name="aMapMode"]').forEach(inp => inp.addEventListener('change', () => {
+  draft.office.mapMode = inp.value;
+  updateMapModeUI();
+  pendingLog('Edycja: mapMode');
+}));
+
+function updatePlnLockUI() {
+  const card = $('#plnLockCard');
+  if (draft.office.pllLock) { card.classList.remove('unlocked'); $('#plnLockIcon').textContent = '🔒'; $('#plnLockTitle').textContent = 'Blokada PLN aktywna (zalecane)'; $('#plnLockDesc').textContent = 'W kalkulatorze klient może wybrać tylko pary, w których jedna ze stron to PLN.'; }
+  else { card.classList.add('unlocked'); $('#plnLockIcon').textContent = '🔓'; $('#plnLockTitle').textContent = 'Blokada zdjęta'; $('#plnLockDesc').textContent = 'Klient może wymienić dowolną parę walut. Przeliczenie idzie wewnętrznie przez PLN.'; }
+}
+$('#plnLockSwitch').addEventListener('change', e => { draft.office.pllLock = e.target.checked; updatePlnLockUI(); pendingLog(`Tryb: ${draft.office.pllLock ? 'blokada PLN' : 'blokada zdjęta'}`); });
+$('#showCalcMarginSwitch').addEventListener('change', e => { draft.office.showCalcMargin = e.target.checked; pendingLog(`Pokaż marżę w kalkulatorze: ${e.target.checked ? 'tak' : 'nie'}`); });
+
+// Password change — direct save (not via draft) since it's an account-security action
+$('#pwdSubmit').addEventListener('click', () => {
+  const cur = $('#pwdCurrent').value;
+  const ne = $('#pwdNew').value;
+  const cf = $('#pwdConfirm').value;
+  const msg = $('#pwdMsg');
+  msg.style.color = 'var(--red)';
+  if (!cur) { msg.textContent = 'Podaj aktualne hasło.'; return; }
+  if (cur !== state.adminPassword) { msg.textContent = 'Aktualne hasło niepoprawne.'; return; }
+  if (!ne || ne.length < 4) { msg.textContent = 'Nowe hasło musi mieć co najmniej 4 znaki.'; return; }
+  if (ne !== cf) { msg.textContent = 'Hasła nie są takie same.'; return; }
+  if (ne === cur) { msg.textContent = 'Nowe hasło musi być inne niż aktualne.'; return; }
+  state.adminPassword = ne;
+  state.audit.unshift({ ts: new Date().toLocaleString('pl-PL'), user: 'admin', action: '🔐 Zmieniono hasło administratora' });
+  if (state.audit.length > 100) state.audit.length = 100;
+  $('#pwdCurrent').value = ''; $('#pwdNew').value = ''; $('#pwdConfirm').value = '';
+  msg.style.color = 'var(--green)';
+  msg.textContent = '✓ Hasło zmienione. Następne logowanie będzie wymagało nowego hasła.';
+  toast('Hasło zmienione');
+});
+
+
+$('#photoUploadBtn').addEventListener('click', () => $('#photoInput').click());
+$('#photoInput').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Plik większy niż 5 MB'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => { draft.office.photo = ev.target.result; draft.office.photoPosY = 50; draft.office.photoZoom = 100; fillAdminForms(); pendingLog('Wgrano zdjęcie kantoru'); };
+  reader.readAsDataURL(file);
+});
+$('#photoRemoveBtn').addEventListener('click', () => { draft.office.photo = null; applyHeroPhoto($('#heroPreview'), $('#heroPreviewImg'), draft); $('#photoEmptyHint').style.display = ''; $('#photoRemoveBtn').style.display = 'none'; pendingLog('Usunięto zdjęcie'); });
+$('#photoPosY').addEventListener('input', e => { draft.office.photoPosY = parseInt(e.target.value); $('#photoPosYVal').textContent = draft.office.photoPosY + '%'; applyHeroPhoto($('#heroPreview'), $('#heroPreviewImg'), draft); });
+$('#photoPosY').addEventListener('change', () => pendingLog('Zmieniono kadrowanie'));
+$('#photoZoom').addEventListener('input', e => { draft.office.photoZoom = parseInt(e.target.value); $('#photoZoomVal').textContent = draft.office.photoZoom + '%'; applyHeroPhoto($('#heroPreview'), $('#heroPreviewImg'), draft); });
+$('#photoZoom').addEventListener('change', () => pendingLog('Zmieniono powiększenie'));
+
+let curSearch = '';
+$('#curSearch').addEventListener('input', e => { curSearch = e.target.value.toLowerCase(); renderCurrenciesAdmin(); });
+
+function getBulkTarget(scope) {
+  if (scope === 'offered') return draft.currencies.filter(c => c.active);
+  if (scope === 'not-offered') return draft.currencies.filter(c => !c.active);
+  if (scope === 'search') { if (!curSearch) return []; return draft.currencies.filter(c => c.code.toLowerCase().includes(curSearch) || c.name.toLowerCase().includes(curSearch)); }
+  if (scope.startsWith('region:')) {
+    const r = scope.substring(7);
+    return draft.currencies.filter(c => c.region === r);
+  }
+  if (scope === 'niche') {
+    const popular = ['EUR','USD','GBP','CHF','JPY','AED','ILS','SGD','HKD','CAD','AUD','NZD','CNY','CZK','SEK','NOK','DKK'];
+    return draft.currencies.filter(c => !popular.includes(c.code));
+  }
+  return draft.currencies;
+}
+$('#bulkApply').addEventListener('click', () => {
+  const buyRaw = $('#bulkBuy').value.trim(), sellRaw = $('#bulkSell').value.trim(), scope = $('#bulkScope').value;
+  if (buyRaw === '' && sellRaw === '') { toast('Podaj przynajmniej jedną marżę'); return; }
+  const buyVal = buyRaw === '' ? null : parseFloat(buyRaw); const sellVal = sellRaw === '' ? null : parseFloat(sellRaw);
+  if ((buyVal !== null && (isNaN(buyVal) || buyVal < 0)) || (sellVal !== null && (isNaN(sellVal) || sellVal < 0))) { toast('Marża musi być ≥ 0'); return; }
+  const target = getBulkTarget(scope);
+  if (!target.length) { toast(scope === 'search' ? 'Wpisz coś w wyszukiwarce' : 'Brak walut'); return; }
+  let lbl;
+  const lblMap = { all: 'wszystkie', offered: 'oferowane', 'not-offered': 'nieoferowane', search: `wyniki "${curSearch}"`, niche: 'niszowe' };
+  if (lblMap[scope]) lbl = lblMap[scope];
+  else if (scope.startsWith('region:')) lbl = REGION_LABELS[scope.substring(7)] || scope;
+  else lbl = scope;
+  if (!confirm(`Zastosować nowe marże do ${target.length} walut (${lbl})?`)) return;
+  target.forEach(c => { if (buyVal !== null) c.buyMargin = buyVal; if (sellVal !== null) c.sellMargin = sellVal; });
+  let parts = []; if (buyVal !== null) parts.push(`kupna ${buyVal}%`); if (sellVal !== null) parts.push(`sprzedaży ${sellVal}%`);
+  pendingLog(`Bulk: marża ${parts.join(' i ')} → ${target.length} walut (${lbl})`);
+  renderCurrenciesAdmin();
+  $('#bulkBuy').value = ''; $('#bulkSell').value = '';
+  toast(`Zaktualizowano ${target.length} walut (czeka na zapis)`);
+});
+const REGION_LABELS = {
+  major: '🌐 Główne walutowe (EUR/USD/GBP/CHF)',
+  nordic: '❄️ Skandynawskie',
+  cee: '🇪🇺 Środkowo-Wschodnia Europa',
+  caucasus: '⛰️ Kaukaz i Azja Środkowa',
+  me: '🕌 Bliski Wschód',
+  africa: '🌍 Afryka',
+  asia: '🌏 Azja-Pacyfik',
+  oceania: '🦘 Oceania',
+  americas: '🌎 Ameryki'
+};
+function regionCount(r) { return draft.currencies.filter(c => c.region === r).length; }
+function updateBulkScopeOptions() {
+  const sel = $('#bulkScope');
+  const offered = draft.currencies.filter(c => c.active).length;
+  const total = draft.currencies.length; const notOffered = total - offered;
+  const cur = sel.value || 'all';
+  let html = `
+    <option value="all">Wszystkie waluty (${total})</option>
+    <option value="offered">Tylko oferowane (${offered})</option>
+    <option value="not-offered">Tylko nieoferowane (${notOffered})</option>
+    <option value="search">Wyniki wyszukiwania${curSearch ? ' (' + getBulkTarget('search').length + ')' : ''}</option>
+    <optgroup label="── Regiony / grupy walut ──">`;
+  Object.entries(REGION_LABELS).forEach(([key, label]) => {
+    html += `<option value="region:${key}">${label} (${regionCount(key)})</option>`;
+  });
+  html += `</optgroup>
+    <optgroup label="── Niszowe (rzadko wybierane) ──">
+      <option value="niche">Tylko niszowe waluty (${draft.currencies.filter(c => ['cee','caucasus','me','africa','oceania','americas'].includes(c.region) && !['EUR','USD','GBP','CHF','JPY','CHF','AED','ILS'].includes(c.code)).length})</option>
+    </optgroup>`;
+  sel.innerHTML = html;
+  sel.value = cur;
+}
+
+function renderCurrenciesAdmin() {
+  updateBulkScopeOptions();
+  const wrap = $('#curGroups');
+  let list = draft.currencies;
+  if (curSearch) list = list.filter(c => c.code.toLowerCase().includes(curSearch) || c.name.toLowerCase().includes(curSearch));
+  const offered = list.filter(c => c.active).sort((a, b) => a.code.localeCompare(b.code));
+  const notOffered = list.filter(c => !c.active).sort((a, b) => a.code.localeCompare(b.code));
+  function group(g, label, arr, hint) {
+    let html = `<div class="cur-group ${g}"><div class="cur-group-head"><div class="ttl">${label}</div><div class="cnt">${arr.length}</div></div>`;
+    if (!arr.length) html += `<div class="cur-empty">${hint}</div>`;
+    else {
+      html += '<div class="cur-list">';
+      arr.forEach(c => {
+        html += `<div class="cur-item">
+          ${currencyMark(c.code)}
+          <div class="info"><div class="code">${c.code}</div><div class="name">${c.name}</div></div>
+          <div class="margins">
+            <input type="number" step="0.1" min="0" value="${c.buyMargin}" title="Marża kupna %" data-field="buyMargin" data-code="${c.code}">
+            <input type="number" step="0.1" min="0" value="${c.sellMargin}" title="Marża sprzedaży %" data-field="sellMargin" data-code="${c.code}">
+          </div>
+          <label class="switch"><input type="checkbox" ${c.active ? 'checked' : ''} data-code="${c.code}" data-field="active"><span class="slider"></span></label>
+        </div>`;
+      });
+      html += '</div>';
+    }
+    return html + '</div>';
+  }
+  wrap.innerHTML = group('offered', '✓ Oferowane', offered, curSearch ? 'Brak wyników.' : 'Włącz waluty z sekcji „Nieoferowane".') + group('not-offered', '○ Nieoferowane', notOffered, curSearch ? 'Brak wyników.' : 'Wszystkie dostępne waluty są oferowane.');
+  wrap.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const cur = draft.currencies.find(x => x.code === inp.dataset.code);
+      if (inp.dataset.field === 'active') { cur.active = inp.checked; pendingLog(`${inp.checked ? 'Włączono' : 'Wyłączono'} ${cur.code}`); }
+      else { cur[inp.dataset.field] = parseFloat(inp.value) || 0; pendingLog(`${inp.dataset.field === 'buyMargin' ? 'Marża kupna' : 'Marża sprzedaży'} ${cur.code} → ${inp.value}%`); }
+      renderCurrenciesAdmin();
+    });
+  });
+}
+
+function renderServicesAdmin() {
+  const wrap = $('#servicesAdminList'); wrap.innerHTML = '';
+  draft.categories.forEach((cat, idx) => {
+    const items = draft.services.filter(s => s.category === cat);
+    const sec = document.createElement('div'); sec.className = 'services-cat-admin';
+    const lbOn = (draft.office.lightboxByCategory || {})[cat] !== false;
+    sec.innerHTML = `
+      <h4>
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span class="cat-reorder">
+            <button class="reorder-btn" data-cat-up="${cat}" title="Kategoria w górę" ${idx === 0 ? 'disabled' : ''}>▲</button>
+            <button class="reorder-btn" data-cat-down="${cat}" title="Kategoria w dół" ${idx === draft.categories.length - 1 ? 'disabled' : ''}>▼</button>
+          </span>
+          📁 ${cat} <span style="color:var(--muted);font-weight:400;font-size:12px;">(${items.length})</span>
+        </span>
+        <span style="display:flex;gap:10px;align-items:center;">
+          <span style="display:flex;gap:6px;align-items:center;font-size:11px;color:var(--muted);font-weight:500;">
+            🔍 pozwalaj użytkownikowi na powiększanie zdjęć
+            <label class="switch"><input type="checkbox" data-cat-lb="${cat}" ${lbOn ? 'checked' : ''}><span class="slider"></span></label>
+          </span>
+          <button class="btn btn-ghost btn-sm" data-rm-cat="${cat}" style="color:var(--red);">usuń sekcję</button>
+        </span>
+      </h4>
+      <div data-cat-rows="${cat}"></div>
+      <div class="cat-add-service-bar"><button class="btn btn-gold btn-sm" data-add-to="${cat}">+ Dodaj usługę w „${cat}"</button></div>`;
+    const rowsWrap = $('[data-cat-rows]', sec);
+    if (!items.length) { const empty = document.createElement('div'); empty.style.cssText = 'padding:14px;color:var(--muted);font-size:13px;text-align:center;'; empty.textContent = 'Brak usług w tej kategorii'; rowsWrap.appendChild(empty); }
+    else { items.forEach(s => rowsWrap.appendChild(serviceRow(s))); }
+    wrap.appendChild(sec);
+  });
+  wrap.querySelectorAll('[data-add-to]').forEach(b => b.addEventListener('click', () => addService(b.dataset.addTo)));
+  wrap.querySelectorAll('[data-rm-cat]').forEach(b => b.addEventListener('click', () => removeCategory(b.dataset.rmCat)));
+  wrap.querySelectorAll('[data-cat-up]').forEach(b => b.addEventListener('click', () => moveCategory(b.dataset.catUp, -1)));
+  wrap.querySelectorAll('[data-cat-down]').forEach(b => b.addEventListener('click', () => moveCategory(b.dataset.catDown, +1)));
+  wrap.querySelectorAll('[data-cat-lb]').forEach(inp => inp.addEventListener('change', () => {
+    if (!draft.office.lightboxByCategory) draft.office.lightboxByCategory = {};
+    draft.office.lightboxByCategory[inp.dataset.catLb] = inp.checked;
+    pendingLog(`Lightbox „${inp.dataset.catLb}": ${inp.checked ? 'włączony' : 'wyłączony'}`);
+  }));
+}
+
+function moveCategory(cat, delta) {
+  const i = draft.categories.indexOf(cat);
+  if (i < 0) return;
+  const j = i + delta;
+  if (j < 0 || j >= draft.categories.length) return;
+  [draft.categories[i], draft.categories[j]] = [draft.categories[j], draft.categories[i]];
+  pendingLog(`Przeniesiono kategorię „${cat}" ${delta < 0 ? 'w górę' : 'w dół'}`);
+  renderServicesAdmin();
+}
+
+function moveService(id, delta) {
+  const item = draft.services.find(s => s.id === id);
+  if (!item) return;
+  // Get all services in same category, in current order
+  const sameCatIdx = [];
+  draft.services.forEach((s, i) => { if (s.category === item.category) sameCatIdx.push(i); });
+  const myPos = sameCatIdx.indexOf(draft.services.indexOf(item));
+  const newPos = myPos + delta;
+  if (newPos < 0 || newPos >= sameCatIdx.length) return;
+  const i1 = sameCatIdx[myPos], i2 = sameCatIdx[newPos];
+  [draft.services[i1], draft.services[i2]] = [draft.services[i2], draft.services[i1]];
+  pendingLog(`Przeniesiono usługę „${item.name}" ${delta < 0 ? 'w górę' : 'w dół'}`);
+  renderServicesAdmin();
+}
+
+function serviceRow(s) {
+  const row = document.createElement('div'); row.className = 'service-row';
+  const iconHtml = s.photo ? `<img src="${s.photo}" alt="">` : (s.icon || '◆');
+  const icon2Html = s.photo2 ? `<img src="${s.photo2}" alt="">` : '<span style="color:#cbd5e1;font-size:14px;">+</span>';
+  row.innerHTML = `
+    <div class="service-reorder">
+      <button class="reorder-btn" data-up="${s.id}" title="W górę">▲</button>
+      <button class="reorder-btn" data-down="${s.id}" title="W dół">▼</button>
+    </div>
+    <div class="service-icons">
+      <button class="icon-trigger" data-icon-for="${s.id}" data-slot="1" title="Zdjęcie/ikona główna">${iconHtml}</button>
+      <button class="icon-trigger small" data-icon-for="${s.id}" data-slot="2" title="Drugie zdjęcie (opcjonalne)">${icon2Html}</button>
+    </div>
+    <input type="text" value="${s.name.replace(/"/g, '&quot;')}" data-id="${s.id}" data-f="name" maxlength="${SERVICE_NAME_MAX}" placeholder="Nazwa" title="Maks. ${SERVICE_NAME_MAX} znaków, ok. 2 linie w karcie">
+    <input type="text" value="${(s.desc || '').replace(/"/g, '&quot;')}" data-id="${s.id}" data-f="desc" maxlength="${SERVICE_DESC_MAX}" placeholder="Opis (opcjonalnie)" title="Maks. ${SERVICE_DESC_MAX} znaków, ok. 4 linie w karcie" class="extra-mobile-hide">
+    <input type="number" value="${s.price}" data-id="${s.id}" data-f="price" step="0.01" placeholder="Cena">
+    <input type="text" value="${s.unit}" data-id="${s.id}" data-f="unit" maxlength="${SERVICE_UNIT_MAX}" placeholder="np. PLN/g" title="Maks. ${SERVICE_UNIT_MAX} znaki" class="extra-mobile-hide">
+    <label class="switch"><input type="checkbox" ${s.active ? 'checked' : ''} data-id="${s.id}" data-f="active"><span class="slider"></span></label>
+    <button class="btn btn-danger btn-sm" data-del="${s.id}">×</button>`;
+  $$('input', row).forEach(inp => {
+    inp.addEventListener('change', () => {
+      const item = draft.services.find(x => x.id == inp.dataset.id);
+      const f = inp.dataset.f;
+      let v = inp.value;
+      if (f === 'name' && v.length > SERVICE_NAME_MAX) v = v.slice(0, SERVICE_NAME_MAX);
+      if (f === 'desc' && v.length > SERVICE_DESC_MAX) v = v.slice(0, SERVICE_DESC_MAX);
+      if (f === 'unit' && v.length > SERVICE_UNIT_MAX) v = v.slice(0, SERVICE_UNIT_MAX);
+      if (v !== inp.value) inp.value = v;
+      item[f] = f === 'price' ? parseFloat(inp.value) || 0 : f === 'active' ? inp.checked : v;
+      pendingLog(`Edycja usługi „${item.name}" (${f})`);
+    });
+  });
+  $('[data-del]', row).addEventListener('click', () => {
+    const id = parseInt(row.querySelector('[data-del]').dataset.del);
+    const item = draft.services.find(x => x.id === id);
+    if (confirm(`Usunąć usługę „${item.name}"?`)) { draft.services = draft.services.filter(x => x.id !== id); pendingLog(`Usunięto usługę: ${item.name}`); renderServicesAdmin(); }
+  });
+  $$('.icon-trigger', row).forEach(t => t.addEventListener('click', e => openIconPicker(e.currentTarget, parseInt(s.id), parseInt(t.dataset.slot))));
+  $('[data-up]', row).addEventListener('click', () => moveService(parseInt(s.id), -1));
+  $('[data-down]', row).addEventListener('click', () => moveService(parseInt(s.id), +1));
+  return row;
+}
+
+function addService(category) {
+  const id = Math.max(0, ...draft.services.map(s => s.id)) + 1;
+  draft.services.push({ id, ...defaultServiceVisuals(category), name: 'Nowa usługa', desc: '', price: 0, active: true, category });
+  pendingLog(`Dodano usługę w „${category}"`); renderServicesAdmin();
+}
+$('#addCategory').addEventListener('click', () => {
+  const name = prompt('Nazwa nowej kategorii:'); if (!name) return;
+  if (draft.categories.includes(name)) { alert('Kategoria już istnieje.'); return; }
+  draft.categories.push(name); pendingLog(`Dodano kategorię: ${name}`); renderServicesAdmin();
+});
+function removeCategory(cat) {
+  const items = draft.services.filter(s => s.category === cat);
+  const suffix = items.length ? ` i wszystkie usługi w niej (${items.length})` : '';
+  if (!confirm(`Usunąć sekcję „${cat}"${suffix}?`)) return;
+  draft.services = draft.services.filter(s => s.category !== cat);
+  draft.categories = draft.categories.filter(c => c !== cat);
+  if (draft.office.lightboxByCategory) delete draft.office.lightboxByCategory[cat];
+  pendingLog(`Usunięto kategorię: ${cat}`); renderServicesAdmin();
+}
+
+function buildPickerGrids() {
+  const stockGrid = $('#stockPhotoGrid'); stockGrid.innerHTML = '';
+  let lastGroup = null;
+  STOCK_PHOTO_LIST.forEach(p => {
+    if (p.group && p.group !== lastGroup) {
+      const sep = document.createElement('div');
+      sep.style.cssText = 'grid-column:1/-1;font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:600;margin:4px 0 2px;';
+      sep.textContent = p.group === 'photo' ? '📸 Zdjęcia produktów (Twoje)' : '🎨 Generyczne ilustracje SVG';
+      stockGrid.appendChild(sep);
+      lastGroup = p.group;
+    }
+    const btn = document.createElement('button'); btn.title = p.label;
+    btn.innerHTML = `<img src="${p.url}" alt="${p.label}">`;
+    btn.addEventListener('click', () => pickStockPhoto(p.url, p.label));
+    stockGrid.appendChild(btn);
+  });
+  const emojiGrid = $('#emojiGrid'); emojiGrid.innerHTML = '';
+  STOCK_EMOJIS.forEach(e => { const btn = document.createElement('button'); btn.textContent = e; btn.addEventListener('click', () => pickEmoji(e)); emojiGrid.appendChild(btn); });
+}
+buildPickerGrids();
+
+let iconTargetId = null;
+let iconTargetSlot = 1;  // 1 = primary photo, 2 = secondary photo
+function removeServicePhotoSlot(item, slot) {
+  if (!item) return;
+  if (slot === 2) {
+    item.photo2 = null;
+    item.caption2 = '';
+    return;
+  }
+  if (item.photo2) {
+    item.photo = item.photo2;
+    item.caption = item.caption2 || item.caption || '';
+    item.photo2 = null;
+    item.caption2 = '';
+    item.icon = null;
+  } else {
+    item.photo = null;
+    item.caption = '';
+    item.icon = '◆';
+  }
+}
+function openIconPicker(triggerEl, serviceId, slot) {
+  iconTargetId = serviceId; iconTargetSlot = slot || 1; refreshIconPickerState();
+  const pop = $('#iconPicker'), rect = triggerEl.getBoundingClientRect();
+  // Reset and show first to measure actual content
+  pop.style.maxHeight = '';
+  pop.style.top = '0px'; pop.style.left = '0px';
+  pop.classList.add('show');
+  const popH = pop.offsetHeight;
+  const popW = pop.offsetWidth;
+  const margin = 12;
+  const spaceBelow = window.innerHeight - rect.bottom - margin;
+  const spaceAbove = rect.top - margin;
+  let top, maxH;
+  if (popH <= spaceBelow) {
+    top = rect.bottom + 6;
+    maxH = window.innerHeight - top - 8;
+  } else if (popH <= spaceAbove) {
+    top = rect.top - popH - 6;
+    maxH = popH;
+  } else if (spaceBelow >= spaceAbove) {
+    top = rect.bottom + 6;
+    maxH = spaceBelow;
+  } else {
+    top = 8;
+    maxH = window.innerHeight - 16;
+  }
+  let left = rect.left;
+  if (left + popW > window.innerWidth - 8) {
+    left = Math.max(8, window.innerWidth - popW - 8);
+  }
+  pop.style.top = top + 'px';
+  pop.style.left = left + 'px';
+  pop.style.maxHeight = maxH + 'px';
+  if (!pop.dataset.locked) { pop.dataset.locked = '1'; lockBodyScroll(); }
+}
+function refreshIconPickerState() {
+  const item = draft.services.find(s => s.id === iconTargetId);
+  const cur = $('#iconPhotoCurrent');
+  const slotField = iconTargetSlot === 2 ? 'photo2' : 'photo';
+  const slotLabel = iconTargetSlot === 2 ? 'zdjęcie #2' : 'zdjęcie główne';
+  $('#iconPickerTitle').textContent = `Ustaw ${slotLabel}`;
+  if (item && item[slotField]) {
+    cur.innerHTML = `<div class="icon-photo-current"><img src="${item[slotField]}"><span>Aktualne ${slotLabel}</span><button class="btn btn-ghost btn-sm" id="iconRemovePhoto">Usuń</button></div>`;
+    $('#iconRemovePhoto').addEventListener('click', () => {
+      const it = draft.services.find(s => s.id === iconTargetId);
+      removeServicePhotoSlot(it, iconTargetSlot);
+      pendingLog(`Usunięto ${slotLabel} usługi „${it.name}"`);
+      renderServicesAdmin(); refreshIconPickerState();
+    });
+  } else { cur.innerHTML = ''; }
+}
+function pickStockPhoto(url, label) {
+  const item = draft.services.find(s => s.id === iconTargetId);
+  if (item) {
+    if (iconTargetSlot === 2) { item.photo2 = url; }
+    else { item.photo = url; item.icon = null; }
+    pendingLog(`${iconTargetSlot === 2 ? 'Drugie zdjęcie' : 'Ilustracja'} usługi „${item.name}" → ${label}`);
+    renderServicesAdmin();
+  }
+  closeIconPicker();
+}
+function pickEmoji(e) {
+  const item = draft.services.find(s => s.id === iconTargetId);
+  if (item) {
+    if (iconTargetSlot === 2) { item.photo2 = null; pendingLog(`Drugie zdjęcie usługi „${item.name}" wyczyszczone (emoji nie wspierane jako #2)`); }
+    else { item.icon = e; item.photo = null; pendingLog(`Ikona usługi „${item.name}" → ${e}`); }
+    renderServicesAdmin();
+  }
+  closeIconPicker();
+}
+$('#iconUploadBtn').addEventListener('click', () => $('#iconPhotoInput').click());
+$('#iconPhotoInput').addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { alert('Plik większy niż 5 MB'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const item = draft.services.find(s => s.id === iconTargetId);
+    if (item) {
+      if (iconTargetSlot === 2) { item.photo2 = ev.target.result; }
+      else { item.photo = ev.target.result; item.icon = null; }
+      pendingLog(`Wgrano ${iconTargetSlot === 2 ? 'drugie zdjęcie' : 'zdjęcie'} usługi „${item.name}"`);
+      renderServicesAdmin(); refreshIconPickerState();
+    }
+    e.target.value = '';
+  };
+  reader.readAsDataURL(file);
+});
+function closeIconPicker() {
+  const pop = $('#iconPicker');
+  if (!pop.classList.contains('show')) return;
+  pop.classList.remove('show');
+  iconTargetId = null;
+  if (pop.dataset.locked) { delete pop.dataset.locked; unlockBodyScroll(); }
+}
+document.addEventListener('click', e => {
+  const pop = $('#iconPicker'); if (!pop.classList.contains('show')) return;
+  if (pop.contains(e.target) || e.target.closest('.icon-trigger')) return;
+  closeIconPicker();
+});
+
+function timeOptions(selected) {
+  const opts = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 30) {
+      const v = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      opts.push(`<option value="${v}" ${v === selected ? 'selected' : ''}>${v}</option>`);
+    }
+  }
+  return opts.join('');
+}
+function updateHoursFromEditor(row) {
+  const day = row.dataset.day;
+  const closed = row.querySelector('[data-hour-closed]').checked;
+  const open = row.querySelector('[data-hour-open]').value;
+  const close = row.querySelector('[data-hour-close]').value;
+  draft.office.hours[day] = closed ? 'Zamknięte' : `${open}–${close}`;
+  pendingLog(`Godziny ${day}`);
+}
+function renderHoursEditor() {
+  const wrap = $('#hoursEditor'); wrap.innerHTML = '';
+  WEEK_DAYS.forEach(day => {
+    const range = parseHoursRange(draft.office.hours[day]);
+    const closed = !range;
+    const row = document.createElement('div'); row.className = 'form-row'; row.dataset.day = day; row.style.gridTemplateColumns = '160px 1fr 1fr auto';
+    row.innerHTML = `
+      <div class="form-field"><label>${day}</label></div>
+      <div class="form-field"><label>Od</label><select data-hour-open ${closed ? 'disabled' : ''}>${timeOptions(range?.open || '09:00')}</select></div>
+      <div class="form-field"><label>Do</label><select data-hour-close ${closed ? 'disabled' : ''}>${timeOptions(range?.close || '18:00')}</select></div>
+      <label style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted);font-weight:600;margin-top:20px;">
+        <input type="checkbox" data-hour-closed ${closed ? 'checked' : ''}> Zamknięte
+      </label>`;
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('[data-hour-closed]').forEach(inp => inp.addEventListener('change', () => {
+    const row = inp.closest('[data-day]');
+    row.querySelector('[data-hour-open]').disabled = inp.checked;
+    row.querySelector('[data-hour-close]').disabled = inp.checked;
+    updateHoursFromEditor(row);
+  }));
+  wrap.querySelectorAll('select').forEach(sel => sel.addEventListener('change', () => updateHoursFromEditor(sel.closest('[data-day]'))));
+}
+
+function renderHolidaysAdmin() {
+  const wrap = $('#holidaysList'); wrap.innerHTML = '';
+  if (!draft.office.holidays) draft.office.holidays = [];
+  // Sort by date
+  const list = [...draft.office.holidays].sort((a,b) => a.date.localeCompare(b.date));
+  if (!list.length) { wrap.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Brak skonfigurowanych dni wolnych.</div>'; return; }
+  const dayNames = ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
+  const html = ['<div class="holidays-list">'];
+  list.forEach(h => {
+    const d = new Date(h.date + 'T00:00:00');
+    const dn = dayNames[d.getDay()];
+    const fmtDate = d.toLocaleDateString('pl-PL', { day:'2-digit', month:'2-digit', year:'numeric' });
+    html.push(`<div class="holiday-item ${h.preset ? 'preset' : ''}">
+      <span class="h-date">${fmtDate}</span>
+      <span class="h-day">${dn}</span>
+      <div class="h-name" title="${h.name.replace(/"/g,'&quot;')}">${h.name}</div>
+      <span class="h-tag ${h.preset ? 'preset' : 'custom'}">${h.preset ? 'święto państwowe' : 'własne'}</span>
+      <button class="btn btn-danger h-rm" data-h-rm="${h.date}|${h.name.replace(/"/g,'&quot;')}">usuń</button>
+    </div>`);
+  });
+  html.push('</div>');
+  wrap.innerHTML = html.join('');
+  wrap.querySelectorAll('[data-h-rm]').forEach(b => b.addEventListener('click', () => {
+    const [date, name] = b.dataset.hRm.split('|');
+    draft.office.holidays = draft.office.holidays.filter(h => !(h.date === date && h.name === name));
+    pendingLog(`Usunięto dzień wolny: ${name} (${date})`);
+    renderHolidaysAdmin();
+  }));
+}
+
+$('#holidayAdd').addEventListener('click', () => {
+  const date = $('#holidayDate').value;
+  const name = $('#holidayName').value.trim();
+  if (!date) { toast('Wybierz datę'); return; }
+  if (!name) { toast('Podaj nazwę dnia wolnego'); return; }
+  if (!draft.office.holidays) draft.office.holidays = [];
+  if (draft.office.holidays.some(h => h.date === date && h.name === name)) { toast('Taki dzień już istnieje'); return; }
+  draft.office.holidays.push({ date, name, preset: false });
+  pendingLog(`Dodano dzień wolny: ${name} (${date})`);
+  $('#holidayDate').value = ''; $('#holidayName').value = '';
+  renderHolidaysAdmin();
+});
+
+function renderAuditLog() {
+  const wrap = $('#auditLog');
+  if (!state.audit.length) { wrap.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">Brak zmian</div>'; return; }
+  wrap.innerHTML = state.audit.map(a => `<div class="entry${a.commit ? ' commit' : ''}"><span><strong>${a.user}</strong> · ${a.action}</span><span class="ts">${a.ts}</span></div>`).join('');
+}
+
+// ===== LIGHTBOX =====
+let lbCurrentGroup = null, lbCurrentIdx = 0;
+function getLbGroup(group) {
+  return Array.from(document.querySelectorAll(`.service-photo[data-lb-group="${group}"]`));
+}
+function openLightbox(srcEl) {
+  // Find the service to check its category lightbox setting
+  const sid = parseInt(srcEl.dataset.lbGroup);
+  const svc = state.services.find(s => s.id === sid);
+  if (svc) {
+    const lbMap = state.office.lightboxByCategory || {};
+    if (lbMap[svc.category] === false) return;
+  }
+  lbCurrentGroup = srcEl.dataset.lbGroup;
+  lbCurrentIdx = parseInt(srcEl.dataset.lbIdx) || 0;
+  showLbCurrent();
+  $('#lightbox').classList.add('show');
+  lockBodyScroll();
+}
+function showLbCurrent() {
+  const group = getLbGroup(lbCurrentGroup);
+  if (!group.length) return;
+  const el = group[lbCurrentIdx];
+  $('#lightboxImg').src = el.dataset.lbSrc;
+  $('#lightboxCaption').textContent = el.dataset.lbCaption + (group.length > 1 ? ` (${lbCurrentIdx+1}/${group.length})` : '');
+  // Hide nav buttons if only one photo
+  $('#lightboxPrev').style.visibility = group.length > 1 ? 'visible' : 'hidden';
+  $('#lightboxNext').style.visibility = group.length > 1 ? 'visible' : 'hidden';
+}
+function closeLightbox() {
+  $('#lightbox').classList.remove('show');
+  unlockBodyScroll();
+  lbCurrentGroup = null;
+}
+function lbNext(delta) {
+  const group = getLbGroup(lbCurrentGroup);
+  if (!group.length) return;
+  lbCurrentIdx = (lbCurrentIdx + delta + group.length) % group.length;
+  showLbCurrent();
+}
+$('#lightboxClose').addEventListener('click', closeLightbox);
+$('#lightboxPrev').addEventListener('click', () => lbNext(-1));
+$('#lightboxNext').addEventListener('click', () => lbNext(+1));
+$('#lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if (!$('#lightbox').classList.contains('show')) return;
+  if (e.key === 'Escape') closeLightbox();
+  else if (e.key === 'ArrowLeft') lbNext(-1);
+  else if (e.key === 'ArrowRight') lbNext(+1);
+});
+// Delegate click on any service-photo (works for re-renders)
+document.addEventListener('click', e => {
+  const img = e.target.closest('.service-photo[data-lb-src]');
+  if (img) openLightbox(img);
+});
+
+(async function init() {
+  renderHeader(); renderCalcSelects(); renderRates(); renderContact(); renderServicesFrontend(); recalc();
+  await loadRates(); renderRates(); recalc();
+  function tickInterval() { if (state.ratesSource === 'Coinbase') return 2 * 60 * 1000; if (state.ratesSource === 'NBP') return 30 * 60 * 1000; return 30 * 1000; }
+  function scheduleNext() {
+    setTimeout(async () => {
+      if (state.ratesSource === 'simulated') fluctuate();
+      else { await loadRates(); renderRates(); recalc(); }
+      scheduleNext();
+    }, tickInterval());
+  }
+  scheduleNext();
+})();
+</script>
+</body>
+</html>

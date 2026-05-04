@@ -1225,7 +1225,7 @@ function renderMap() {
   const q = encodeURIComponent(query).replace(/%20/g, '+');
   const placeParam = target.placeId ? `&query_place_id=${encodeURIComponent(target.placeId)}` : '';
   const src = target.coords
-    ? `https://maps.google.com/maps?ll=${encodeURIComponent(target.coords)}&z=16&hl=pl&gl=PL&region=PL&output=embed`
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(target.coords)}&z=16&hl=pl&gl=PL&region=PL&iwloc=near&output=embed`
     : `https://maps.google.com/maps?q=${q}${placeParam}&z=16&hl=pl&gl=PL&region=PL&iwloc=near&output=embed`;
   const mapsUrl = target.coords
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(target.coords)}`

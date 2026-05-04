@@ -187,11 +187,6 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
 .hours-table tr.today { font-weight: 700; color: var(--navy); }
 .hours-table tr.today td:first-child::before { content: '▸ '; color: var(--gold); }
 
-.map-card { position: absolute; left: 16px; top: 16px; width: min(360px, calc(100% - 32px)); background: rgba(255,255,255,.96); border: 1px solid rgba(227,230,236,.95); border-radius: 8px; box-shadow: 0 6px 18px rgba(15,23,41,.14); padding: 10px 12px; z-index: 3; pointer-events: auto; }
-.map-card strong { display: block; color: var(--navy); font-size: 13px; line-height: 1.25; margin-bottom: 2px; }
-.map-card span { display: block; color: var(--muted); font-size: 11px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.map-open { display: inline-block; margin-top: 6px; color: var(--navy); font-size: 11px; font-weight: 700; text-decoration: none; }
-.map-open:hover { text-decoration: underline; }
 .location-card { display: flex; flex-direction: column; min-height: 100%; }
 .location-card h3 { flex: 0 0 auto; }
 .map-frame { width: 100%; flex: 1 1 auto; min-height: 260px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #eef2f8; position: relative; }
@@ -493,7 +488,6 @@ input:checked + .slider::before { transform: translateX(16px); }
   .contact-item .val { overflow-wrap: anywhere; }
   .map-frame { min-height: 220px; }
   .map-frame iframe { min-height: 220px; }
-  .map-card { left: 10px; top: 10px; width: min(300px, calc(100% - 20px)); padding: 9px 10px; }
   footer.site { padding: 24px 16px 18px; margin-top: 28px; }
 
   .modal-bg { padding: 12px; align-items: flex-start; overflow-y: auto; }
@@ -813,14 +807,14 @@ input:checked + .slider::before { transform: translateX(16px); }
           <label>Źródło mapy</label>
           <div style="display:flex;gap:14px;align-items:center;min-height:38px;flex-wrap:wrap;">
             <label style="display:flex;gap:6px;align-items:center;font-weight:600;color:var(--text);"><input type="radio" name="aMapMode" id="aMapModeAddress" value="address"> Adres</label>
-            <label style="display:flex;gap:6px;align-items:center;font-weight:600;color:var(--text);"><input type="radio" name="aMapMode" id="aMapModePlace" value="placeId"> Google Place ID</label>
+            <label style="display:flex;gap:6px;align-items:center;font-weight:600;color:var(--text);"><input type="radio" name="aMapMode" id="aMapModePlace" value="placeId"> Link Google / współrzędne</label>
           </div>
         </div>
       </div>
       <div class="form-row" id="mapPlaceFields">
-        <div class="form-field"><label>Place ID</label><input type="text" id="aPlaceId" placeholder="np. ChIJF386zJDMHkcRt3Kjcv31A3A"></div>
-        <div class="form-field"><label>Nazwa/adres miejsca dla Google</label><input type="text" id="aMapPlaceQuery" placeholder='np. Kantor "Zawisza", Aleje Jerozolimskie, Warszawa, Polska'></div>
-        <div style="grid-column:1/-1;font-size:12px;color:var(--muted);margin-top:-8px;">Dla trybu Place ID Google wymaga też tekstu wyszukiwania miejsca. Wklej nazwę lub adres z narzędzia Place ID Finder.</div>
+        <div class="form-field"><label>Google Maps URL / współrzędne</label><input type="text" id="aPlaceId" placeholder="np. @52.2296756,21.0122287 albo link Google Maps"></div>
+        <div class="form-field"><label>Adres pomocniczy</label><input type="text" id="aMapPlaceQuery" placeholder='np. ul. Marszałkowska 100, Warszawa'></div>
+        <div style="grid-column:1/-1;font-size:12px;color:var(--muted);margin-top:-8px;">Najczyściej działa link Google Maps zawierający @szerokość,długość albo same współrzędne. Wtedy Google pokazuje mapę bez karty miejsca, która potrafi używać obcej transliteracji.</div>
       </div>
       <div class="section-title" style="font-size:16px;margin-top:20px;">Godziny otwarcia</div>
       <div id="hoursEditor"></div>
@@ -1041,7 +1035,7 @@ const state = {
     heroDesc: 'Wymiana 30+ walut · Skup i sprzedaż złota · Otwarte 6 dni w tygodniu',
     logoText: 'XYZ', photo: null, photoPosY: 50, photoZoom: 100,
     address: 'ul. Marszałkowska 100, 00-001 Warszawa', phone: '+48 123 456 789',
-    email: 'kontakt@kantor.pl', mapMode: 'address', placeId: '', mapPlaceQuery: '',
+    email: 'kontakt@kantor.pl', mapMode: 'placeId', placeId: '@52.2296756,21.0122287', mapPlaceQuery: 'ul. Marszałkowska 100, 00-001 Warszawa',
     nip: '000-000-00-00', nbpRegistry: 'XXXXXX', pllLock: true, showCalcMargin: false,
     lightboxByCategory: { 'Sprzedaż i skup złota': false, 'Sprzedaż i skup srebra': false, [COINS_BANKNOTES_CATEGORY]: true },
     hours: { 'Poniedziałek': '9:00–18:00','Wtorek': '9:00–18:00','Środa': '9:00–18:00','Czwartek': '9:00–18:00','Piątek': '9:00–19:00','Sobota': '10:00–14:00','Niedziela': 'Zamknięte' },
@@ -1194,20 +1188,28 @@ function mapTarget(src) {
   const raw = mode === 'placeId' ? (src.office.placeId || '').trim() : '';
   const fallbackQuery = src.office.address || src.office.name;
   if (raw) {
-    const placeMatch = raw.match(/(?:place_id:|query_place_id=)(ChIJ[^&\s]+)/i) || raw.match(/^(ChIJ[^\s&?#]+)/i);
-    const coordMatch = raw.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) || raw.match(/[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) || raw.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/);
-    const queryMatch = raw.match(/[?&]query=([^&]+)/i) || raw.match(/[?&]q=([^&]+)/i);
-    if (coordMatch) return { query: `${coordMatch[1]},${coordMatch[2]}`, placeId: '' };
+    let decodedRaw = raw.replace(/\+/g, ' ');
+    try { decodedRaw = decodeURIComponent(decodedRaw); } catch (e) {}
+    const placeMatch = decodedRaw.match(/(?:place_id:|query_place_id=)(ChIJ[^&\s]+)/i) || decodedRaw.match(/^(ChIJ[^\s&?#]+)/i);
+    const coordMatch =
+      decodedRaw.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) ||
+      decodedRaw.match(/[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) ||
+      decodedRaw.match(/[?&]q=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) ||
+      decodedRaw.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/) ||
+      decodedRaw.match(/^\s*(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\s*$/);
+    const queryMatch = decodedRaw.match(/[?&]query=([^&]+)/i) || decodedRaw.match(/[?&]q=([^&]+)/i);
+    if (coordMatch) return { query: (src.office.mapPlaceQuery || '').trim() || fallbackQuery, coords: `${coordMatch[1]},${coordMatch[2]}`, placeId: '' };
     if (placeMatch) {
       return {
-        query: (src.office.mapPlaceQuery || '').trim() || (queryMatch ? decodeURIComponent(queryMatch[1].replace(/\+/g, ' ')) : '') || src.office.name || fallbackQuery,
-        placeId: decodeURIComponent(placeMatch[1])
+        query: (src.office.mapPlaceQuery || '').trim() || (queryMatch ? queryMatch[1] : '') || src.office.name || fallbackQuery,
+        coords: '',
+        placeId: placeMatch[1]
       };
     }
-    if (queryMatch) return { query: decodeURIComponent(queryMatch[1].replace(/\+/g, ' ')), placeId: '' };
-    return { query: raw, placeId: '' };
+    if (queryMatch) return { query: queryMatch[1], coords: '', placeId: '' };
+    return { query: decodedRaw, coords: '', placeId: '' };
   }
-  return { query: fallbackQuery, placeId: '' };
+  return { query: fallbackQuery, coords: '', placeId: '' };
 }
 function renderMap() {
   const target = mapTarget();
@@ -1215,16 +1217,11 @@ function renderMap() {
   const query = target.query || state.office.address || state.office.name;
   const q = encodeURIComponent(query).replace(/%20/g, '+');
   const placeParam = target.placeId ? `&query_place_id=${encodeURIComponent(target.placeId)}` : '';
-  const src = `https://maps.google.com/maps?q=${q}${placeParam}&z=16&hl=pl&output=embed`;
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}${target.placeId ? `&query_place_id=${encodeURIComponent(target.placeId)}` : ''}`;
+  const src = target.coords
+    ? `https://maps.google.com/maps?q=loc:${target.coords}&z=16&hl=pl&gl=PL&region=PL&iwloc=near&output=embed`
+    : `https://maps.google.com/maps?q=${q}${placeParam}&z=16&hl=pl&gl=PL&region=PL&iwloc=near&output=embed`;
   const name = escapeHTML(state.office.name);
-  const address = escapeHTML(state.office.address || query);
-  frame.innerHTML = `<iframe title="Mapa dojazdu do ${name}" referrerpolicy="no-referrer-when-downgrade" loading="lazy" src="${src}"></iframe>
-    <div class="map-card">
-      <strong>${name}</strong>
-      <span>${address}</span>
-      <a class="map-open" href="${mapsUrl}" target="_blank" rel="noopener">Otwórz w Google Maps</a>
-    </div>`;
+  frame.innerHTML = `<iframe title="Mapa dojazdu do ${name}" referrerpolicy="no-referrer-when-downgrade" loading="lazy" src="${src}"></iframe>`;
 }
 
 // Compute actual diff between draft and committed state.

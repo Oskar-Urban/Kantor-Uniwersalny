@@ -27,7 +27,8 @@ body { padding-bottom: 0; }
 .demo-banner a { color: #7c2d12; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 
 header.site { background: var(--navy); color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-header.site .brand { display: flex; align-items: center; gap: 12px; }
+header.site .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; border-radius: 10px; cursor: pointer; }
+header.site .brand:focus-visible { outline: 3px solid rgba(200,162,90,.85); outline-offset: 4px; }
 header.site .logo { width: 46px; height: 46px; border-radius: 9px; background: linear-gradient(135deg, var(--gold), var(--gold-2)); border: 2px solid rgba(255,255,255,.42); box-shadow: inset 0 0 0 1px rgba(12,35,64,.16); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy); font-size: 18px; letter-spacing: 0; flex-shrink: 0; }
 header.site h1 { font-size: 20px; font-weight: 700; }
 header.site .slogan { font-size: 12px; opacity: .8; }
@@ -548,13 +549,13 @@ input:checked + .slider::before { transform: translateX(16px); }
 </div>
 
 <header class="site">
-  <div class="brand">
+  <a class="brand" href="./index.html" aria-label="Odśwież stronę główną">
     <div class="logo" id="brandLogo">XYZ</div>
     <div>
       <h1 id="brandName">Kantor "XYZ"</h1>
       <div class="slogan" id="brandSlogan">Najlepsze kursy w mieście</div>
     </div>
-  </div>
+  </a>
   <nav>
     <a href="#rates">Kursy</a>
     <a href="#calc">Kalkulator</a>

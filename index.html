@@ -107,6 +107,10 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
 .services-cat-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #f1f3f6; }
 .services-cat-head .name { font-weight: 700; font-size: 15px; color: var(--navy); }
 .services-cat-head .count { display: none; }
+.services-cat-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; padding: 0; cursor: default; }
+.services-cat-title { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+.services-cat-count { display: none; color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.services-cat-chevron { display: none; color: var(--gold-2); font-size: 16px; line-height: 1; transition: transform .16s ease; flex: 0 0 auto; }
 .services-grid { display: grid; gap: 14px; align-items: stretch; }
 .services-grid.size-1,
 .services-grid.size-2,
@@ -451,9 +455,22 @@ input:checked + .slider::before { transform: translateX(16px); }
   .calc-input select { width: 116px; min-width: 0; max-width: 45%; padding: 0 8px; font-size: 13px; }
   .calc-mode-tag { margin-left: 4px; }
 
-  .services-cat { margin-bottom: 24px; }
-  .services-cat-head { align-items: flex-start; }
-  .services-cat-head .name { font-size: 14px; line-height: 1.3; }
+  #services { padding: 16px; }
+  #services h3 { display: block; margin-bottom: 12px; }
+  #services h3 span { display: block; margin-top: 2px; font-size: 12px !important; }
+  .services-cat { margin-bottom: 10px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: white; }
+  .services-cat-head { align-items: stretch; margin: 0; padding: 0; border-bottom: 0; }
+  .services-cat-toggle { min-height: 54px; padding: 13px 14px; cursor: pointer; }
+  .services-cat-title { display: block; }
+  .services-cat-head .name { display: block; font-size: 14px; line-height: 1.25; }
+  .services-cat-count { display: block; margin-top: 4px; }
+  .services-cat-chevron { display: block; }
+  .services-cat.is-open .services-cat-chevron { transform: rotate(180deg); }
+  .services-cat.is-open .services-cat-head { border-bottom: 1px solid var(--border); }
+  .services-cat.is-collapsed .services-grid,
+  .services-cat.is-collapsed .cat-expand-bar { display: none; }
+  .services-cat.is-open .services-grid { padding: 12px; }
+  .services-cat.is-open .cat-expand-bar { padding: 0 12px 12px; margin-top: 0; }
   .service {
     display: grid;
     grid-template-columns: 1fr;
@@ -1591,12 +1608,15 @@ function applyServicePhotoFrames(root = document) {
 }
 
 const expandedCategories = new Set();
+const mobileOpenServiceCategories = new Set();
+const servicesAccordionMedia = window.matchMedia('(max-width: 640px)');
 function renderServicesFrontend() {
   const wrap = $('#servicesContainer'); wrap.innerHTML = '';
   const section = $('#services');
   const navLink = $('#servicesNavLink');
   const seen = new Set();
   const active = state.services.filter(s => s.active);
+  const useMobileAccordion = servicesAccordionMedia.matches;
   const orderedCats = [...state.categories.filter(c => active.some(s => s.category === c)), ...active.map(s => s.category).filter((c, i, a) => a.indexOf(c) === i && !state.categories.includes(c))];
   if (!active.length) {
     section.style.display = 'none';
@@ -1605,19 +1625,32 @@ function renderServicesFrontend() {
   }
   section.style.display = '';
   if (navLink) navLink.style.display = '';
-  orderedCats.forEach(cat => {
+  orderedCats.forEach((cat, catIndex) => {
     if (seen.has(cat)) return; seen.add(cat);
     const allItems = active.filter(s => s.category === cat);
     if (!allItems.length) return;
     const totalCount = allItems.length;
     const isExpanded = expandedCategories.has(cat);
+    const isMobileOpen = !useMobileAccordion || mobileOpenServiceCategories.has(cat);
     const items = (totalCount > 9 && !isExpanded) ? allItems.slice(0, 9) : allItems;
     const sizeClass = totalCount === 1 ? 'size-1' : totalCount === 2 ? 'size-2' : totalCount === 3 ? 'size-3' : 'size-many';
     const isSingle = totalCount === 1;
-    const sec = document.createElement('div'); sec.className = 'services-cat';
+    const panelId = `services-cat-panel-${catIndex}`;
+    const safeCat = escapeHTML(cat);
+    const categoryHead = useMobileAccordion
+      ? `<button class="services-cat-toggle" type="button" data-toggle-service-cat="${safeCat}" aria-expanded="${isMobileOpen ? 'true' : 'false'}" aria-controls="${panelId}">
+          <span class="services-cat-title"><span class="name">${safeCat}</span><span class="services-cat-count">${totalCount} ${totalCount === 1 ? 'pozycja' : totalCount < 5 ? 'pozycje' : 'pozycji'}</span></span>
+          <span class="services-cat-chevron" aria-hidden="true">⌄</span>
+        </button>`
+      : `<div class="services-cat-toggle">
+          <span class="services-cat-title"><span class="name">${safeCat}</span><span class="services-cat-count">${totalCount} ${totalCount === 1 ? 'pozycja' : totalCount < 5 ? 'pozycje' : 'pozycji'}</span></span>
+        </div>`;
+    const sec = document.createElement('div'); sec.className = `services-cat ${isMobileOpen ? 'is-open' : 'is-collapsed'}`;
     sec.innerHTML = `
-      <div class="services-cat-head"><div class="name">${cat}</div><div class="count">${totalCount}</div></div>
-      <div class="services-grid ${sizeClass}">
+      <div class="services-cat-head">
+        ${categoryHead}
+      </div>
+      <div class="services-grid ${sizeClass}" id="${panelId}">
         ${items.map(s => `
           <div class="service">
             ${serviceVisualHtml(s, isSingle)}
@@ -1631,6 +1664,12 @@ function renderServicesFrontend() {
       ${totalCount > 9 ? `<div class="cat-expand-bar"><button class="cat-expand-btn" data-toggle-cat="${cat.replace(/"/g,'&quot;')}">${isExpanded ? `▲ Pokaż mniej` : `▼ Pokaż więcej (${totalCount - 9})`}</button></div>` : ''}`;
     wrap.appendChild(sec);
   });
+  wrap.querySelectorAll('[data-toggle-service-cat]').forEach(b => b.addEventListener('click', () => {
+    const c = b.dataset.toggleServiceCat;
+    if (mobileOpenServiceCategories.has(c)) mobileOpenServiceCategories.delete(c);
+    else mobileOpenServiceCategories.add(c);
+    renderServicesFrontend();
+  }));
   // Wire expand/collapse buttons
   wrap.querySelectorAll('[data-toggle-cat]').forEach(b => b.addEventListener('click', () => {
     const c = b.dataset.toggleCat;
@@ -1638,6 +1677,12 @@ function renderServicesFrontend() {
     renderServicesFrontend();
   }));
   applyServicePhotoFrames(wrap);
+}
+
+if (servicesAccordionMedia.addEventListener) {
+  servicesAccordionMedia.addEventListener('change', renderServicesFrontend);
+} else if (servicesAccordionMedia.addListener) {
+  servicesAccordionMedia.addListener(renderServicesFrontend);
 }
 
 function renderCalcSelects() {

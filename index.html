@@ -26,21 +26,24 @@ body { padding-bottom: 0; }
 .demo-banner strong { color: #7c2d12; }
 .demo-banner a { color: #7c2d12; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 
-header.site { background: var(--navy); color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
-header.site .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; border-radius: 10px; cursor: pointer; }
+.masthead { position: relative; overflow: hidden; isolation: isolate; background: #0c2340; }
+.masthead-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; z-index: 0; transform-origin: center 50%; pointer-events: none; }
+.masthead::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(7,21,39,.68) 0%, rgba(7,21,39,.42) 30%, rgba(7,21,39,.18) 58%, rgba(7,21,39,.66) 100%); z-index: 1; pointer-events: none; }
+
+header.site { position: relative; z-index: 2; background: transparent; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+header.site .brand { display: flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; border-radius: 12px; cursor: pointer; padding: 8px 10px; margin: -8px -10px; background: rgba(7,21,39,.32); border: 1px solid rgba(255,255,255,.1); box-shadow: 0 12px 30px rgba(0,0,0,.12); backdrop-filter: blur(8px) saturate(1.08); -webkit-backdrop-filter: blur(8px) saturate(1.08); }
 header.site .brand:focus-visible { outline: 3px solid rgba(200,162,90,.85); outline-offset: 4px; }
 header.site .logo { width: 46px; height: 46px; border-radius: 9px; background: linear-gradient(135deg, var(--gold), var(--gold-2)); border: 2px solid rgba(255,255,255,.42); box-shadow: inset 0 0 0 1px rgba(12,35,64,.16); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--navy); font-size: 18px; letter-spacing: 0; flex-shrink: 0; }
-header.site h1 { font-size: 20px; font-weight: 700; }
-header.site .slogan { font-size: 12px; opacity: .8; }
-header.site nav { display: flex; gap: 20px; font-size: 14px; }
-header.site nav a { color: white; text-decoration: none; opacity: .9; }
-header.site nav a:hover { opacity: 1; text-decoration: underline; }
+header.site h1 { font-size: 20px; font-weight: 700; text-shadow: 0 1px 12px rgba(0,0,0,.34); }
+header.site .slogan { font-size: 12px; opacity: .92; text-shadow: 0 1px 12px rgba(0,0,0,.34); }
+header.site nav { display: flex; gap: 4px; font-size: 14px; padding: 6px; border-radius: 14px; background: rgba(7,21,39,.46); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 14px 36px rgba(0,0,0,.16); backdrop-filter: blur(12px) saturate(1.12); -webkit-backdrop-filter: blur(12px) saturate(1.12); }
+header.site nav a { color: white; text-decoration: none; opacity: 1; padding: 7px 11px; border-radius: 10px; text-shadow: 0 1px 12px rgba(0,0,0,.35); }
+header.site nav a:hover { background: rgba(255,255,255,.14); text-decoration: none; }
 
-.hero { position: relative; height: 280px; overflow: hidden; display: flex; align-items: flex-end; padding: 32px; background: linear-gradient(135deg, #1e3a5f 0%, #0c2340 50%, #2d4663 100%); }
+.hero { position: relative; z-index: 2; height: 280px; overflow: hidden; display: flex; align-items: flex-end; padding: 32px; background: transparent; }
 .hero .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; z-index: 0; }
-.hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,35,64,.85) 0%, rgba(12,35,64,.3) 60%, transparent 100%); z-index: 1; }
+.hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,35,64,.82) 0%, rgba(12,35,64,.32) 58%, transparent 100%); z-index: 1; pointer-events: none; }
 .hero-content { position: relative; color: white; max-width: 600px; z-index: 2; }
-.hero h2 { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
 .hero p { font-size: 16px; opacity: .95; }
 
 .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
@@ -564,29 +567,30 @@ input:checked + .slider::before { transform: translateX(16px); }
   <strong>WERSJA POGLĄDOWA</strong> — wszystkie treści, kursy, usługi i dane kontaktowe są edytowalne. <a href="#" data-open-admin>Zaloguj się do panelu administratora</a>.
 </div>
 
-<header class="site">
-  <a class="brand" href="./index.html" aria-label="Odśwież stronę główną">
-    <div class="logo" id="brandLogo">XYZ</div>
-    <div>
-      <h1 id="brandName">Kantor "XYZ"</h1>
-      <div class="slogan" id="brandSlogan">Najlepsze kursy w mieście</div>
-    </div>
-  </a>
-  <nav>
-    <a href="#rates">Kursy</a>
-    <a href="#calc">Kalkulator</a>
-    <a href="#services" id="servicesNavLink">Usługi</a>
-    <a href="#contact">Kontakt</a>
-  </nav>
-</header>
+<div class="masthead" id="masthead">
+  <img class="masthead-bg" id="mastheadBgImg" alt="" style="display:none;">
+  <header class="site">
+    <a class="brand" href="./index.html" aria-label="Odśwież stronę główną">
+      <div class="logo" id="brandLogo">XYZ</div>
+      <div>
+        <h1 id="brandName">Kantor "XYZ"</h1>
+        <div class="slogan" id="brandSlogan">Najlepsze kursy w mieście</div>
+      </div>
+    </a>
+    <nav>
+      <a href="#rates">Kursy</a>
+      <a href="#calc">Kalkulator</a>
+      <a href="#services" id="servicesNavLink">Usługi</a>
+      <a href="#contact">Kontakt</a>
+    </nav>
+  </header>
 
-<section class="hero" id="hero">
-  <img class="hero-img" id="heroImg" alt="" style="display:none;">
-  <div class="hero-content">
-    <h2 id="heroName">Kantor "XYZ"</h2>
-    <p id="heroDesc">Wymiana 30+ walut · Skup i sprzedaż złota · Otwarte 6 dni w tygodniu</p>
-  </div>
-</section>
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <p id="heroDesc">Wymiana 30+ walut · Skup i sprzedaż złota · Otwarte 6 dni w tygodniu</p>
+    </div>
+  </section>
+</div>
 
 <div class="container">
   <div class="grid grid-2">
@@ -744,7 +748,6 @@ input:checked + .slider::before { transform: translateX(16px); }
           <div class="hero" id="heroPreview" style="height: 240px;">
             <img class="hero-img" id="heroPreviewImg" alt="" style="display:none;">
             <div class="hero-content">
-              <h2 id="heroPreviewName">Kantor Uniwersalny</h2>
               <p id="heroPreviewDesc">—</p>
             </div>
           </div>
@@ -1446,11 +1449,10 @@ function renderHeader() {
   $('#brandName').textContent = state.office.name;
   $('#brandSlogan').textContent = state.office.slogan;
   $('#brandLogo').textContent = state.office.logoText;
-  $('#heroName').textContent = state.office.name;
   $('#heroDesc').textContent = state.office.heroDesc;
   $('#footerName').textContent = `© 2026 ${state.office.name}`;
   $('#footerLegal').textContent = `NIP: ${state.office.nip} · Wpis do rejestru działalności kantorowej NBP nr ${state.office.nbpRegistry}`;
-  applyHeroPhoto($('#hero'), $('#heroImg'), state);
+  applyHeroPhoto($('#masthead'), $('#mastheadBgImg'), state);
   renderMap();
 }
 
@@ -1805,7 +1807,6 @@ function fillAdminForms() {
   $('#photoPosY').value = draft.office.photoPosY; $('#photoPosYVal').textContent = draft.office.photoPosY + '%';
   $('#photoZoom').value = draft.office.photoZoom; $('#photoZoomVal').textContent = draft.office.photoZoom + '%';
   applyHeroPhoto($('#heroPreview'), $('#heroPreviewImg'), draft);
-  $('#heroPreviewName').textContent = draft.office.name;
   $('#heroPreviewDesc').textContent = draft.office.heroDesc;
   $('#photoEmptyHint').style.display = draft.office.photo ? 'none' : '';
   $('#photoRemoveBtn').style.display = draft.office.photo ? '' : 'none';
@@ -1824,7 +1825,6 @@ function updateMapModeUI() {
     const field = map[id]; let v = $('#' + id).value;
     if (id === 'aLogoText') v = v.toUpperCase();
     draft.office[field] = v;
-    if (id === 'aName') $('#heroPreviewName').textContent = v || 'Kantor';
     if (id === 'aHeroDesc') $('#heroPreviewDesc').textContent = v || '—';
     pendingLog(`Edycja: ${field}`);
   });

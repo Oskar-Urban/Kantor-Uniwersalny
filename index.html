@@ -187,10 +187,10 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
 .hours-table tr.today { font-weight: 700; color: var(--navy); }
 .hours-table tr.today td:first-child::before { content: '▸ '; color: var(--gold); }
 
-.map-card { position: absolute; left: 18px; top: 18px; width: min(520px, calc(100% - 36px)); min-height: 116px; background: rgba(255,255,255,.98); border: 1px solid rgba(227,230,236,.95); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,41,.16); padding: 14px 16px; z-index: 3; pointer-events: auto; }
-.map-card strong { display: block; color: var(--navy); font-size: 15px; line-height: 1.25; margin-bottom: 4px; }
-.map-card span { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; }
-.map-open { display: inline-block; margin-top: 10px; color: var(--navy); font-size: 12px; font-weight: 700; text-decoration: none; }
+.map-card { position: absolute; left: 16px; top: 16px; width: min(360px, calc(100% - 32px)); background: rgba(255,255,255,.96); border: 1px solid rgba(227,230,236,.95); border-radius: 8px; box-shadow: 0 6px 18px rgba(15,23,41,.14); padding: 10px 12px; z-index: 3; pointer-events: auto; }
+.map-card strong { display: block; color: var(--navy); font-size: 13px; line-height: 1.25; margin-bottom: 2px; }
+.map-card span { display: block; color: var(--muted); font-size: 11px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.map-open { display: inline-block; margin-top: 6px; color: var(--navy); font-size: 11px; font-weight: 700; text-decoration: none; }
 .map-open:hover { text-decoration: underline; }
 .location-card { display: flex; flex-direction: column; min-height: 100%; }
 .location-card h3 { flex: 0 0 auto; }
@@ -493,7 +493,7 @@ input:checked + .slider::before { transform: translateX(16px); }
   .contact-item .val { overflow-wrap: anywhere; }
   .map-frame { min-height: 220px; }
   .map-frame iframe { min-height: 220px; }
-  .map-card { left: 12px; top: 12px; max-width: calc(100% - 24px); padding: 12px; }
+  .map-card { left: 10px; top: 10px; width: min(300px, calc(100% - 20px)); padding: 9px 10px; }
   footer.site { padding: 24px 16px 18px; margin-top: 28px; }
 
   .modal-bg { padding: 12px; align-items: flex-start; overflow-y: auto; }

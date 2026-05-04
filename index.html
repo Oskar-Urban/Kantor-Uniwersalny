@@ -39,12 +39,17 @@ header.site .slogan { font-size: 12px; opacity: .92; text-shadow: 0 1px 12px rgb
 header.site nav { display: flex; gap: 4px; font-size: 14px; padding: 6px; border-radius: 14px; background: rgba(7,21,39,.46); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 14px 36px rgba(0,0,0,.16); backdrop-filter: blur(12px) saturate(1.12); -webkit-backdrop-filter: blur(12px) saturate(1.12); }
 header.site nav a { color: white; text-decoration: none; opacity: 1; padding: 7px 11px; border-radius: 10px; text-shadow: 0 1px 12px rgba(0,0,0,.35); }
 header.site nav a:hover { background: rgba(255,255,255,.14); text-decoration: none; }
+header.site nav a.is-refreshing { pointer-events: none; opacity: .72; }
 
 .hero { position: relative; z-index: 2; height: 280px; overflow: hidden; display: flex; align-items: flex-end; padding: 32px; background: transparent; }
 .hero .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; z-index: 0; }
 .hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(12,35,64,.82) 0%, rgba(12,35,64,.32) 58%, transparent 100%); z-index: 1; pointer-events: none; }
 .hero-content { position: relative; color: white; max-width: 600px; z-index: 2; }
 .hero p { font-size: 16px; opacity: .95; }
+
+@media (min-width: 641px) and (max-width: 1200px) {
+  .hero { height: 240px; }
+}
 
 .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
 .grid { display: grid; gap: 20px; }
@@ -578,7 +583,7 @@ input:checked + .slider::before { transform: translateX(16px); }
       </div>
     </a>
     <nav>
-      <a href="#rates">Kursy</a>
+      <a href="#rates" id="refreshRatesLink">Odśwież Kursy</a>
       <a href="#calc">Kalkulator</a>
       <a href="#services" id="servicesNavLink">Usługi</a>
       <a href="#contact">Kontakt</a>
@@ -1420,6 +1425,25 @@ async function loadRates() {
   try { await loadFromCoinbase(); state.ratesSource = 'Coinbase'; state.ratesDate = new Date().toISOString(); return; } catch (e) {}
   try { await loadFromNBP(); state.ratesSource = 'NBP'; return; } catch (e) {}
   state.ratesSource = 'simulated';
+}
+async function refreshRatesManually() {
+  const link = $('#refreshRatesLink');
+  if (link && link.classList.contains('is-refreshing')) return;
+  if (link) {
+    link.classList.add('is-refreshing');
+    link.setAttribute('aria-busy', 'true');
+  }
+  state.ratesSource = 'loading';
+  renderRates(); recalc();
+  try {
+    await loadRates();
+    renderRates(); recalc();
+  } finally {
+    if (link) {
+      link.classList.remove('is-refreshing');
+      link.removeAttribute('aria-busy');
+    }
+  }
 }
 function fluctuate() {
   state.currencies.forEach(c => { c.prevMid = c.mid; const drift = (Math.random() - 0.5) * 0.004; c.mid = +(c.mid * (1 + drift)).toFixed(c.mid < 0.1 ? 5 : 4); });
@@ -2404,6 +2428,10 @@ document.addEventListener('keydown', e => {
 document.addEventListener('click', e => {
   const img = e.target.closest('.service-photo[data-lb-src]');
   if (img) openLightbox(img);
+});
+$('#refreshRatesLink').addEventListener('click', e => {
+  e.preventDefault();
+  refreshRatesManually();
 });
 
 (async function init() {

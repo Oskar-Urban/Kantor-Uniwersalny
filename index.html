@@ -187,23 +187,15 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
 .hours-table tr.today { font-weight: 700; color: var(--navy); }
 .hours-table tr.today td:first-child::before { content: '▸ '; color: var(--gold); }
 
-.map-mock { width: 100%; height: 100%; min-height: 260px; border-radius: 10px; border: 1px solid var(--border); position: relative; overflow: hidden; background: linear-gradient(rgba(232,239,247,.45), rgba(232,239,247,.45)), repeating-linear-gradient(0deg, #d6dde7 0, #d6dde7 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #d6dde7 0, #d6dde7 1px, transparent 1px, transparent 40px), #eef2f8; }
-.map-mock::before, .map-mock::after { content: ''; position: absolute; background: #f5e6c8; }
-.map-mock::before { left: 30%; top: 0; bottom: 0; width: 14%; transform: skewX(-12deg); }
-.map-mock::after { top: 55%; left: 0; right: 0; height: 18%; }
-.map-mock .road2 { position: absolute; top: 20%; left: 0; right: 0; height: 6%; background: #e8d4a8; }
-.map-mock .pin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -100%); width: 32px; height: 32px; border-radius: 50% 50% 50% 0; background: var(--red); rotate: -45deg; box-shadow: 0 4px 8px rgba(0,0,0,.25); z-index: 2; }
-.map-mock .pin::after { content: ''; position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; background: white; border-radius: 50%; transform: translate(-50%, -50%); }
-.map-mock .label { position: absolute; left: 50%; top: 50%; max-width: calc(100% - 32px); transform: translate(-50%, 22px); background: white; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,.15); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; }
-.map-mock .note { position: absolute; bottom: 8px; right: 8px; background: rgba(255,255,255,.9); padding: 4px 8px; border-radius: 4px; font-size: 10px; color: var(--muted); }
-.map-card { position: absolute; left: 18px; top: 18px; max-width: min(420px, calc(100% - 36px)); background: rgba(255,255,255,.96); border: 1px solid rgba(227,230,236,.95); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,41,.14); padding: 14px 16px; z-index: 3; }
+.map-card { position: absolute; left: 18px; top: 18px; width: min(520px, calc(100% - 36px)); min-height: 116px; background: rgba(255,255,255,.98); border: 1px solid rgba(227,230,236,.95); border-radius: 10px; box-shadow: 0 8px 24px rgba(15,23,41,.16); padding: 14px 16px; z-index: 3; pointer-events: auto; }
 .map-card strong { display: block; color: var(--navy); font-size: 15px; line-height: 1.25; margin-bottom: 4px; }
 .map-card span { display: block; color: var(--muted); font-size: 13px; line-height: 1.35; }
 .map-open { display: inline-block; margin-top: 10px; color: var(--navy); font-size: 12px; font-weight: 700; text-decoration: none; }
 .map-open:hover { text-decoration: underline; }
 .location-card { display: flex; flex-direction: column; min-height: 100%; }
 .location-card h3 { flex: 0 0 auto; }
-.map-frame { width: 100%; flex: 1 1 auto; min-height: 260px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #eef2f8; }
+.map-frame { width: 100%; flex: 1 1 auto; min-height: 260px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #eef2f8; position: relative; }
+.map-frame iframe { width: 100%; height: 100%; min-height: 260px; border: 0; display: block; }
 
 footer.site { background: var(--navy); color: white; padding: 30px 24px 20px; margin-top: 40px; text-align: center; }
 footer.site p { font-size: 13px; opacity: .85; margin-bottom: 8px; }
@@ -500,7 +492,7 @@ input:checked + .slider::before { transform: translateX(16px); }
   .contact-row { grid-template-columns: 1fr; gap: 10px; }
   .contact-item .val { overflow-wrap: anywhere; }
   .map-frame { min-height: 220px; }
-  .map-mock { min-height: 220px; }
+  .map-frame iframe { min-height: 220px; }
   .map-card { left: 12px; top: 12px; max-width: calc(100% - 24px); padding: 12px; }
   footer.site { padding: 24px 16px 18px; margin-top: 28px; }
 
@@ -1221,20 +1213,18 @@ function renderMap() {
   const target = mapTarget();
   const frame = $('#mapFrame');
   const query = target.query || state.office.address || state.office.name;
+  const q = encodeURIComponent(query).replace(/%20/g, '+');
+  const placeParam = target.placeId ? `&query_place_id=${encodeURIComponent(target.placeId)}` : '';
+  const src = `https://maps.google.com/maps?q=${q}${placeParam}&z=16&hl=pl&output=embed`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}${target.placeId ? `&query_place_id=${encodeURIComponent(target.placeId)}` : ''}`;
   const name = escapeHTML(state.office.name);
   const address = escapeHTML(state.office.address || query);
-  frame.innerHTML = `<div class="map-mock" role="img" aria-label="Mapa dojazdu do ${name}">
-    <div class="road2"></div>
+  frame.innerHTML = `<iframe title="Mapa dojazdu do ${name}" referrerpolicy="no-referrer-when-downgrade" loading="lazy" src="${src}"></iframe>
     <div class="map-card">
       <strong>${name}</strong>
       <span>${address}</span>
       <a class="map-open" href="${mapsUrl}" target="_blank" rel="noopener">Otwórz w Google Maps</a>
-    </div>
-    <div class="pin" aria-hidden="true"></div>
-    <div class="label">${address}</div>
-    <div class="note">Podgląd lokalizacji</div>
-  </div>`;
+    </div>`;
 }
 
 // Compute actual diff between draft and committed state.

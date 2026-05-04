@@ -193,6 +193,8 @@ header.site nav a:hover { opacity: 1; text-decoration: underline; }
 .map-directions-link:hover { border-color: var(--gold); background: #fffaf0; }
 .map-frame { width: 100%; flex: 1 1 auto; min-height: 260px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #eef2f8; position: relative; }
 .map-frame iframe { width: 100%; height: 100%; min-height: 260px; border: 0; display: block; }
+.map-pin { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; background: #dc2626; transform: translate(-50%, -100%) rotate(-45deg); box-shadow: 0 3px 8px rgba(15,23,41,.28); z-index: 2; pointer-events: none; }
+.map-pin::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; border-radius: 50%; background: white; transform: translate(-50%, -50%); }
 
 footer.site { background: var(--navy); color: white; padding: 30px 24px 20px; margin-top: 40px; text-align: center; }
 footer.site p { font-size: 13px; opacity: .85; margin-bottom: 8px; }
@@ -1231,7 +1233,7 @@ function renderMap() {
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(target.coords)}`
     : `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}${target.placeId ? `&destination_place_id=${encodeURIComponent(target.placeId)}` : ''}`;
   const name = escapeHTML(state.office.name);
-  frame.innerHTML = `<iframe title="Mapa dojazdu do ${name}" referrerpolicy="no-referrer-when-downgrade" loading="lazy" src="${src}"></iframe>`;
+  frame.innerHTML = `<iframe title="Mapa dojazdu do ${name}" referrerpolicy="no-referrer-when-downgrade" loading="lazy" src="${src}"></iframe><span class="map-pin" aria-hidden="true"></span>`;
   const directions = $('#mapDirectionsLink');
   if (directions) directions.href = mapsUrl;
 }

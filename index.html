@@ -467,6 +467,11 @@ input:checked + .slider::before { transform: translateX(16px); }
     border-right: 0;
     border-bottom: 1px solid var(--border);
   }
+  .service-photo-col.is-wide-photo { height: clamp(102px, 32vw, 126px); }
+  .service-photo-col.is-extra-wide-photo { height: clamp(88px, 28vw, 112px); }
+  .service-photo-col.is-wide-photo .service-photo,
+  .service-photo-col.is-extra-wide-photo .service-photo { padding: 3px 8px; }
+  .service-photo-col.is-extra-wide-photo .service-photo { object-fit: cover; }
   .service-photo-col.two { grid-template-columns: 1fr 1fr; }
   .service .body { padding: 13px 14px 14px; }
   .service .service-name {
@@ -1488,14 +1493,102 @@ function serviceVisualHtml(s, isSingleInCategory) {
   const noZoom = lbOn ? '' : ' no-zoom';
   const caption1 = (s.caption || s.name).replace(/"/g, '&quot;');
   const caption2 = (s.caption2 || s.caption || s.name).replace(/"/g, '&quot;');
+  const frameHint = s.photo === USER_PHOTOS.old_coins ? 'extra-wide' : '';
+  const frameHintAttr = frameHint ? ` data-frame-hint="${frameHint}"` : '';
+  const frameHintClass = frameHint ? ` is-${frameHint}-photo` : '';
   if (s.photo && s.photo2) {
     return `<div class="service-photo-col two${noZoom}">
       <img class="service-photo" src="${s.photo}" alt="${s.name}" data-lb-src="${s.photo}" data-lb-caption="${caption1}" data-lb-group="${s.id}" data-lb-idx="0">
       <img class="service-photo" src="${s.photo2}" alt="${s.name}" data-lb-src="${s.photo2}" data-lb-caption="${caption2}" data-lb-group="${s.id}" data-lb-idx="1">
     </div>`;
   }
-  if (s.photo) return `<div class="service-photo-col${noZoom}"><img class="service-photo" src="${s.photo}" alt="${s.name}" data-lb-src="${s.photo}" data-lb-caption="${caption1}" data-lb-group="${s.id}" data-lb-idx="0"></div>`;
+  if (s.photo) return `<div class="service-photo-col${noZoom}${frameHintClass}"><img class="service-photo" src="${s.photo}" alt="${s.name}" data-lb-src="${s.photo}" data-lb-caption="${caption1}" data-lb-group="${s.id}" data-lb-idx="0"${frameHintAttr}></div>`;
   return `<div class="service-photo-col icon-only"><div class="service-icon">${s.icon || '◆'}</div></div>`;
+}
+
+function updateServicePhotoFrame(img) {
+  const col = img.closest('.service-photo-col');
+  if (!col || col.classList.contains('two') || col.classList.contains('icon-only')) return;
+  if (img.dataset.frameHint) {
+    col.classList.toggle('is-wide-photo', img.dataset.frameHint === 'wide');
+    col.classList.toggle('is-extra-wide-photo', img.dataset.frameHint === 'extra-wide');
+    return;
+  }
+  const ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1;
+  col.classList.toggle('is-wide-photo', ratio >= 1.75 && ratio < 2.6);
+  col.classList.toggle('is-extra-wide-photo', ratio >= 2.6);
+}
+
+function trimServicePhotoWhitespace(img) {
+  if (img.dataset.trimmed || img.dataset.trimFailed) {
+    updateServicePhotoFrame(img);
+    return;
+  }
+  try {
+    const naturalW = img.naturalWidth;
+    const naturalH = img.naturalHeight;
+    if (!naturalW || !naturalH) return;
+    const scale = Math.min(1, 700 / Math.max(naturalW, naturalH));
+    const w = Math.max(1, Math.round(naturalW * scale));
+    const h = Math.max(1, Math.round(naturalH * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, w, h);
+    const data = ctx.getImageData(0, 0, w, h).data;
+    const px = (x, y) => {
+      const i = (y * w + x) * 4;
+      return [data[i], data[i + 1], data[i + 2], data[i + 3]];
+    };
+    const corners = [px(0, 0), px(w - 1, 0), px(0, h - 1), px(w - 1, h - 1)];
+    const bg = corners.reduce((a, c) => [a[0] + c[0], a[1] + c[1], a[2] + c[2], a[3] + c[3]], [0,0,0,0]).map(v => v / corners.length);
+    const dist = (r, g, b) => Math.hypot(r - bg[0], g - bg[1], b - bg[2]);
+    let minX = w, minY = h, maxX = -1, maxY = -1;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        const a = data[i + 3];
+        const isBackground = a < 18 || (Math.abs(a - bg[3]) < 48 && dist(data[i], data[i + 1], data[i + 2]) < 28);
+        if (!isBackground) {
+          minX = Math.min(minX, x); minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+        }
+      }
+    }
+    if (maxX < minX || maxY < minY) {
+      img.dataset.trimmed = '1';
+      updateServicePhotoFrame(img);
+      return;
+    }
+    const cropW = maxX - minX + 1;
+    const cropH = maxY - minY + 1;
+    if (cropW > w * 0.9 && cropH > h * 0.9) {
+      img.dataset.trimmed = '1';
+      updateServicePhotoFrame(img);
+      return;
+    }
+    const pad = Math.round(Math.max(cropW, cropH) * 0.04);
+    const sx = Math.max(0, Math.floor((minX - pad) / scale));
+    const sy = Math.max(0, Math.floor((minY - pad) / scale));
+    const sw = Math.min(naturalW - sx, Math.ceil((cropW + pad * 2) / scale));
+    const sh = Math.min(naturalH - sy, Math.ceil((cropH + pad * 2) / scale));
+    const out = document.createElement('canvas');
+    out.width = sw; out.height = sh;
+    out.getContext('2d').drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+    img.dataset.trimmed = '1';
+    img.addEventListener('load', () => updateServicePhotoFrame(img), { once: true });
+    img.src = out.toDataURL('image/png');
+  } catch (err) {
+    img.dataset.trimFailed = '1';
+    updateServicePhotoFrame(img);
+  }
+}
+
+function applyServicePhotoFrames(root = document) {
+  root.querySelectorAll('.service-photo-col:not(.icon-only) .service-photo').forEach(img => {
+    if (img.complete) trimServicePhotoWhitespace(img);
+    else img.addEventListener('load', () => trimServicePhotoWhitespace(img), { once: true });
+  });
 }
 
 const expandedCategories = new Set();
@@ -1545,6 +1638,7 @@ function renderServicesFrontend() {
     if (expandedCategories.has(c)) expandedCategories.delete(c); else expandedCategories.add(c);
     renderServicesFrontend();
   }));
+  applyServicePhotoFrames(wrap);
 }
 
 function renderCalcSelects() {

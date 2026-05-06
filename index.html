@@ -40,6 +40,7 @@ header.site nav { display: flex; gap: 4px; font-size: 14px; padding: 6px; border
 header.site nav a { color: white; text-decoration: none; opacity: 1; padding: 7px 11px; border-radius: 10px; text-shadow: 0 1px 12px rgba(0,0,0,.35); }
 header.site nav a:hover { background: rgba(255,255,255,.14); text-decoration: none; }
 header.site nav a.is-refreshing { pointer-events: none; opacity: .72; }
+.mobile-menu-toggle { display: none; }
 
 .hero { position: relative; z-index: 2; height: 240px; overflow: hidden; display: flex; align-items: flex-end; padding: 32px; background: transparent; }
 .hero .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; z-index: 0; }
@@ -404,20 +405,63 @@ input:checked + .slider::before { transform: translateX(16px); }
   .demo-banner { padding: 8px 12px; font-size: 12px; line-height: 1.35; }
 
   header.site {
-    padding: 14px 14px 12px;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 0;
   }
-  header.site .brand { gap: 10px; min-width: 0; }
+  header.site .brand { gap: 10px; min-width: 0; padding: 10px; margin: 0; }
+  header.site .brand > div { min-width: 0; }
   header.site .logo { width: 42px; height: 42px; font-size: 16px; }
   header.site h1 { font-size: 18px; line-height: 1.15; }
   header.site .slogan { font-size: 12px; line-height: 1.25; }
+  .mobile-menu-toggle {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 14px;
+    background: rgba(7,21,39,.46);
+    color: white;
+    box-shadow: 0 14px 36px rgba(0,0,0,.16);
+    backdrop-filter: blur(12px) saturate(1.12);
+    -webkit-backdrop-filter: blur(12px) saturate(1.12);
+    cursor: pointer;
+  }
+  .mobile-menu-toggle::before {
+    content: '☰';
+    font-size: 27px;
+    line-height: 1;
+    font-weight: 800;
+    transition: transform .18s ease;
+  }
+  header.site.nav-open .mobile-menu-toggle::before { content: '×'; font-size: 32px; transform: rotate(90deg); }
   header.site nav {
+    grid-column: 1 / -1;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
     font-size: 12px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    padding: 0 6px;
+    border-width: 0;
+    margin-top: 0;
+    transition: max-height .22s ease, opacity .16s ease, padding .22s ease, margin .22s ease, border-width .22s ease;
+  }
+  header.site.nav-open nav {
+    max-height: 180px;
+    opacity: 1;
+    pointer-events: auto;
+    padding: 6px;
+    border-width: 1px;
+    margin-top: 10px;
   }
   header.site nav a {
     text-align: center;
@@ -428,7 +472,7 @@ input:checked + .slider::before { transform: translateX(16px); }
     text-overflow: ellipsis;
   }
 
-  .hero { height: 230px; padding: 20px 16px 24px; }
+  .hero { height: 160px; padding: 18px 16px 22px; }
   .hero h2 { font-size: 30px; line-height: 1.05; }
   .hero p { font-size: 14px; line-height: 1.4; max-width: 330px; }
 
@@ -578,7 +622,8 @@ input:checked + .slider::before { transform: translateX(16px); }
         <div class="slogan" id="brandSlogan">Najlepsze kursy w mieście</div>
       </div>
     </a>
-    <nav>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Rozwiń menu" aria-controls="siteNav" aria-expanded="false"></button>
+    <nav id="siteNav">
       <a href="#rates" id="refreshRatesLink">Odśwież Kursy</a>
       <a href="#calc">Kalkulator</a>
       <a href="#services" id="servicesNavLink">Usługi</a>
@@ -2425,6 +2470,36 @@ document.addEventListener('click', e => {
   const img = e.target.closest('.service-photo[data-lb-src]');
   if (img) openLightbox(img);
 });
+const mobileNavMedia = window.matchMedia('(max-width: 640px)');
+function setMobileMenu(open) {
+  const header = document.querySelector('header.site');
+  const btn = $('#mobileMenuToggle');
+  const nav = $('#siteNav');
+  if (!header || !btn) return;
+  const shouldHideNav = mobileNavMedia.matches && !open;
+  header.classList.toggle('nav-open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  btn.setAttribute('aria-label', open ? 'Zwiń menu' : 'Rozwiń menu');
+  nav.setAttribute('aria-hidden', shouldHideNav ? 'true' : 'false');
+  nav.querySelectorAll('a').forEach(a => {
+    if (shouldHideNav) a.setAttribute('tabindex', '-1');
+    else a.removeAttribute('tabindex');
+  });
+}
+$('#mobileMenuToggle').addEventListener('click', () => {
+  if (!mobileNavMedia.matches) return;
+  const isOpen = document.querySelector('header.site').classList.contains('nav-open');
+  setMobileMenu(!isOpen);
+});
+$('#siteNav').addEventListener('click', e => {
+  if (mobileNavMedia.matches && e.target.closest('a')) setMobileMenu(false);
+});
+if (mobileNavMedia.addEventListener) {
+  mobileNavMedia.addEventListener('change', e => { if (!e.matches) setMobileMenu(false); });
+} else if (mobileNavMedia.addListener) {
+  mobileNavMedia.addListener(e => { if (!e.matches) setMobileMenu(false); });
+}
+setMobileMenu(false);
 $('#refreshRatesLink').addEventListener('click', e => {
   e.preventDefault();
   refreshRatesManually();

@@ -25,6 +25,8 @@ body { padding-bottom: 0; }
 .demo-banner { background: #fff7ed; color: #9a3412; border-bottom: 1px solid #fed7aa; padding: 10px 20px; font-size: 13px; text-align: center; }
 .demo-banner strong { color: #7c2d12; }
 .demo-banner a { color: #7c2d12; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+.demo-banner .reset-demo-link { border: 0; background: transparent; color: #7c2d12; font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding: 0; margin-left: 2em; }
+.demo-banner .reset-demo-link:hover { color: #9a3412; }
 
 .masthead { position: relative; overflow: hidden; isolation: isolate; background: #0c2340; }
 .masthead-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 50%; z-index: 0; transform-origin: center 50%; pointer-events: none; }
@@ -628,7 +630,7 @@ input:checked + .slider::before { transform: translateX(16px); }
 <body>
 
 <div class="demo-banner">
-  <strong>WERSJA POGLĄDOWA</strong> — wszystkie treści, kursy, usługi i dane kontaktowe są edytowalne. <a href="#" data-open-admin>Zaloguj się do panelu administratora</a>.
+  <strong>WERSJA POGLĄDOWA</strong> — wszystkie treści, kursy, usługi i dane kontaktowe są edytowalne. <a href="#" data-open-admin>Zaloguj się do panelu administratora</a>. <button type="button" class="reset-demo-link" data-reset-demo>Przywróć ustawienia domyślne</button>.
 </div>
 
 <div class="masthead" id="masthead">
@@ -729,7 +731,7 @@ input:checked + .slider::before { transform: translateX(16px); }
 </footer>
 
 <div class="demo-banner">
-  <strong>WERSJA POGLĄDOWA</strong> — wszystkie treści, kursy, usługi i dane kontaktowe są edytowalne. <a href="#" data-open-admin>Zaloguj się do panelu administratora</a>.
+  <strong>WERSJA POGLĄDOWA</strong> — wszystkie treści, kursy, usługi i dane kontaktowe są edytowalne. <a href="#" data-open-admin>Zaloguj się do panelu administratora</a>. <button type="button" class="reset-demo-link" data-reset-demo>Przywróć ustawienia domyślne</button>.
 </div>
 
 <div class="modal-bg" id="loginModal">
@@ -964,6 +966,7 @@ input:checked + .slider::before { transform: translateX(16px); }
   <div class="lightbox-caption" id="lightboxCaption"></div>
 </div>
 
+<script src="marketing/demo-leads.js"></script>
 <script>
 const SVG_GOLD_585 = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g585f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff3a8"/><stop offset="30%" stop-color="#ecc34c"/><stop offset="60%" stop-color="#c08a18"/><stop offset="100%" stop-color="#5e4108"/></linearGradient><linearGradient id="g585t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff8d6"/><stop offset="100%" stop-color="#d4a93f"/></linearGradient><linearGradient id="g585s" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0)"/><stop offset="50%" stop-color="rgba(255,255,255,0.45)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><polygon points="6,3 94,3 98,11 2,11" fill="url(#g585t)" stroke="#5e4108" stroke-width="0.5"/><rect x="2" y="11" width="96" height="46" rx="1" fill="url(#g585f)" stroke="#5e4108" stroke-width="0.5"/><rect x="4" y="13" width="92" height="3" fill="url(#g585s)"/><rect x="6" y="15" width="88" height="38" fill="none" stroke="#8b6914" stroke-width="0.3"/><text x="50" y="21" text-anchor="middle" fill="#5e4108" font-size="3.4" font-family="Georgia" font-weight="bold" letter-spacing="0.6">FINE GOLD</text><line x1="22" y1="23" x2="78" y2="23" stroke="#5e4108" stroke-width="0.3"/><text x="50" y="35" text-anchor="middle" fill="#5e4108" font-size="11" font-family="Georgia" font-weight="bold">Au 585</text><text x="50" y="43" text-anchor="middle" fill="#5e4108" font-size="3" font-family="monospace" letter-spacing="0.3">No. 014257</text><text x="50" y="48" text-anchor="middle" fill="#5e4108" font-size="2.7" font-family="Georgia" font-style="italic">Polish Mint · 14K</text><line x1="22" y1="50.5" x2="78" y2="50.5" stroke="#5e4108" stroke-width="0.3"/></svg>`;
 const SVG_GOLD_750 = `<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g750f" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff0a0"/><stop offset="30%" stop-color="#f0c020"/><stop offset="60%" stop-color="#a87808"/><stop offset="100%" stop-color="#4a3008"/></linearGradient><linearGradient id="g750t" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff5c0"/><stop offset="100%" stop-color="#e0b020"/></linearGradient><linearGradient id="g750s" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="rgba(255,255,255,0)"/><stop offset="50%" stop-color="rgba(255,255,255,0.5)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><polygon points="6,3 94,3 98,11 2,11" fill="url(#g750t)" stroke="#4a3008" stroke-width="0.5"/><rect x="2" y="11" width="96" height="46" rx="1" fill="url(#g750f)" stroke="#4a3008" stroke-width="0.5"/><rect x="4" y="13" width="92" height="3" fill="url(#g750s)"/><rect x="6" y="15" width="88" height="38" fill="none" stroke="#7a5a14" stroke-width="0.3"/><text x="50" y="21" text-anchor="middle" fill="#4a3008" font-size="3.4" font-family="Georgia" font-weight="bold" letter-spacing="0.6">FINE GOLD</text><line x1="22" y1="23" x2="78" y2="23" stroke="#4a3008" stroke-width="0.3"/><text x="50" y="35" text-anchor="middle" fill="#4a3008" font-size="11" font-family="Georgia" font-weight="bold">Au 750</text><text x="50" y="43" text-anchor="middle" fill="#4a3008" font-size="3" font-family="monospace" letter-spacing="0.3">No. 075198</text><text x="50" y="48" text-anchor="middle" fill="#4a3008" font-size="2.7" font-family="Georgia" font-style="italic">Polish Mint · 18K</text><line x1="22" y1="50.5" x2="78" y2="50.5" stroke="#4a3008" stroke-width="0.3"/></svg>`;
@@ -1173,6 +1176,172 @@ let draft = null, dirty = false;
 function deepClone(o) { return JSON.parse(JSON.stringify(o)); }
 function $(s, c) { return (c || document).querySelector(s); }
 function $$(s, c) { return (c || document).querySelectorAll(s); }
+const DEMO_STORAGE_KEY = 'kantor-uniwersalny-demo-state-v1';
+const DEFAULT_DEMO_STATE = deepClone(state);
+
+function storableStateSnapshot(src) {
+  return {
+    adminUser: src.adminUser,
+    adminPassword: src.adminPassword,
+    office: deepClone(src.office),
+    currencies: deepClone(src.currencies),
+    categories: deepClone(src.categories),
+    services: deepClone(src.services),
+    audit: deepClone(src.audit || [])
+  };
+}
+
+function applyStoredStateSnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return false;
+  ['adminUser','adminPassword'].forEach(key => {
+    if (typeof snapshot[key] === 'string' && snapshot[key]) state[key] = snapshot[key];
+  });
+  ['office','currencies','categories','services','audit'].forEach(key => {
+    if (snapshot[key] != null) state[key] = deepClone(snapshot[key]);
+  });
+  state.loggedIn = false;
+  state.ratesSource = 'loading';
+  state.ratesDate = null;
+  return true;
+}
+
+function loadDemoState() {
+  try {
+    const raw = localStorage.getItem(DEMO_STORAGE_KEY);
+    if (!raw) return false;
+    const payload = JSON.parse(raw);
+    return applyStoredStateSnapshot(payload && payload.state);
+  } catch (e) {
+    console.warn('Nie udało się odczytać lokalnego zapisu demo.', e);
+    return false;
+  }
+}
+
+function persistDemoState() {
+  try {
+    localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify({
+      savedAt: new Date().toISOString(),
+      state: storableStateSnapshot(state)
+    }));
+    return true;
+  } catch (e) {
+    console.warn('Nie udało się zapisać lokalnego stanu demo.', e);
+    toast('Nie udało się zapisać lokalnie. Przeglądarka mogła zablokować pamięć.');
+    return false;
+  }
+}
+
+function resetDemoState() {
+  const hasDraftChanges = computeDirtyChanges().length > 0;
+  const msg = hasDraftChanges
+    ? 'Przywrócić ustawienia domyślne? Niezapisane i zapisane lokalnie zmiany w tej przeglądarce zostaną usunięte.'
+    : 'Przywrócić ustawienia domyślne? Zapisane lokalnie zmiany w tej przeglądarce zostaną usunięte.';
+  if (!confirm(msg)) return;
+  try { localStorage.removeItem(DEMO_STORAGE_KEY); } catch (e) {}
+  applyStoredStateSnapshot(storableStateSnapshot(DEFAULT_DEMO_STATE));
+  location.reload();
+}
+
+function decodeDemoPayload(raw) {
+  if (!raw) return null;
+  try {
+    const normalized = raw.replace(/-/g, '+').replace(/_/g, '/');
+    const padded = normalized + '='.repeat((4 - normalized.length % 4) % 4);
+    const binary = atob(padded);
+    const bytes = Uint8Array.from(binary, ch => ch.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch (e) {
+    console.warn('Nie udało się odczytać personalizacji demo z linku.', e);
+    return null;
+  }
+}
+
+function normalizeDemoCode(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^#/, '')
+    .replace(/^demo[-_]?/, '')
+    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function demoLeadByCode(value) {
+  const code = normalizeDemoCode(value);
+  if (!code) return null;
+  const registry = window.KANTOR_DEMOS || {};
+  return registry[code] || null;
+}
+
+function demoCodeFromPath() {
+  const match = window.location.pathname.match(/(?:^|\/)demo-([a-z0-9-]+)\/?$/i);
+  return match ? match[1] : '';
+}
+
+function demoParamsFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const shortCode = params.get('d') || params.get('demoId') || params.get('demo-id') || params.get('leadId') || params.get('lead-id');
+  const shortLead = demoLeadByCode(shortCode) || demoLeadByCode(window.location.hash) || demoLeadByCode(demoCodeFromPath());
+  if (shortLead) return shortLead;
+
+  const encoded = params.get('demo') || params.get('lead');
+  if (encoded) return demoLeadByCode(encoded) || decodeDemoPayload(encoded);
+  const direct = {};
+  ['name','slogan','heroDesc','address','phone','email','placeId','mapUrl','mapQuery','mapsUrl','googleMapsUrl'].forEach(key => {
+    const value = params.get(key);
+    if (value) direct[key] = value;
+  });
+  return Object.keys(direct).length ? direct : null;
+}
+
+function logoTextFromName(name) {
+  const words = String(name || '').replace(/[^\p{L}\p{N}\s]/gu, ' ').trim().split(/\s+/).filter(Boolean);
+  const skip = new Set(['kantor','wymiany','walut','currency','exchange','office']);
+  const picked = words.filter(w => !skip.has(w.toLowerCase())).slice(0, 2);
+  return (picked.length ? picked : words).map(w => w[0]).join('').toUpperCase().slice(0, 3) || 'KU';
+}
+
+function applyUrlDemoPersonalization() {
+  const lead = demoParamsFromUrl();
+  if (!lead || typeof lead !== 'object') return false;
+  const o = state.office;
+  const name = String(lead.name || '').trim();
+  const address = String(lead.address || '').trim();
+  const phone = String(lead.phone || '').trim();
+  const email = String(lead.email || '').trim();
+  const mapQuery = String(lead.mapQuery || [name, address].filter(Boolean).join(', ')).trim();
+  const mapSource = String(lead.placeId || lead.mapUrl || lead.mapsUrl || lead.googleMapsUrl || '').trim();
+
+  if (name) {
+    o.name = name;
+    o.logoText = logoTextFromName(name);
+  }
+  if (address) o.address = address;
+  if (phone) o.phone = phone;
+  if (email) o.email = email;
+  o.slogan = String(lead.slogan || `Wymiana walut w lokalizacji ${address ? 'Warszawa Ochota' : 'blisko Ciebie'}`).trim();
+  o.heroDesc = String(lead.heroDesc || `Wymiana walut · Skup i sprzedaż złota · ${address || 'Warszawa Ochota'}`).trim();
+  if (mapSource) {
+    o.mapMode = 'placeId';
+    o.placeId = mapSource;
+    o.mapPlaceQuery = mapQuery || address || name;
+  } else if (address || name) {
+    o.mapMode = 'address';
+    o.placeId = '';
+    o.mapPlaceQuery = mapQuery || address || name;
+  }
+  state.audit = state.audit || [];
+  state.audit.unshift({
+    ts: new Date().toLocaleString('pl-PL'),
+    user: 'system',
+    action: `Personalizacja demo z linku${name ? `: ${name}` : ''}`
+  });
+  if (state.audit.length > 100) state.audit.length = 100;
+  return true;
+}
+
+loadDemoState();
+applyUrlDemoPersonalization();
 function escapeHTML(value) {
   return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 }
@@ -1286,7 +1455,9 @@ function mapTarget(src) {
   if (raw) {
     let decodedRaw = raw.replace(/\+/g, ' ');
     try { decodedRaw = decodeURIComponent(decodedRaw); } catch (e) {}
-    const placeMatch = decodedRaw.match(/(?:place_id:|query_place_id=)(ChIJ[^&\s]+)/i) || decodedRaw.match(/^(ChIJ[^\s&?#]+)/i);
+    const placeMatch =
+      decodedRaw.match(/(?:place_id:|query_place_id=)([A-Za-z0-9_-]+)/i) ||
+      decodedRaw.match(/^([A-Za-z0-9_-]{20,})$/);
     const coordMatch =
       decodedRaw.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) ||
       decodedRaw.match(/[?&]ll=(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/) ||
@@ -1440,6 +1611,7 @@ function saveChanges() {
   changes.slice().reverse().forEach(c => state.audit.unshift({ ts, user: 'admin', action: c.action }));
   state.audit.unshift({ ts, user: 'admin', action: `══ Zapisano sesję edycji (${count} ${count === 1 ? 'zmiana' : count < 5 ? 'zmiany' : 'zmian'}) ══`, commit: true });
   if (state.audit.length > 100) state.audit.length = 100;
+  persistDemoState();
   renderHeader(); renderRates(); renderContact(); renderMap(); renderServicesFrontend(); renderCalcSelects(); recalc();
   // Reset draft so diff = 0
   draft = deepClone(state);
@@ -1850,6 +2022,7 @@ function showLoginModal(e) {
   $('#loginUser').focus();
 }
 $$('[data-open-admin]').forEach(link => link.addEventListener('click', showLoginModal));
+$$('[data-reset-demo]').forEach(btn => btn.addEventListener('click', resetDemoState));
 $('#loginCancel').addEventListener('click', () => { $('#loginModal').classList.remove('show'); unlockBodyScroll(); });
 $('#loginSubmit').addEventListener('click', tryLogin);
 $('#loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
@@ -1942,6 +2115,7 @@ $('#pwdSubmit').addEventListener('click', () => {
   state.adminPassword = ne;
   state.audit.unshift({ ts: new Date().toLocaleString('pl-PL'), user: 'admin', action: '🔐 Zmieniono hasło administratora' });
   if (state.audit.length > 100) state.audit.length = 100;
+  persistDemoState();
   $('#pwdCurrent').value = ''; $('#pwdNew').value = ''; $('#pwdConfirm').value = '';
   msg.style.color = 'var(--green)';
   msg.textContent = '✓ Hasło zmienione. Następne logowanie będzie wymagało nowego hasła.';

@@ -14,17 +14,18 @@ Strona obsługuje krótkie identyfikatory demo zapisane w `marketing/demo-leads.
 Domyślny format linku:
 
 ```text
-https://Oskar-Urban.github.io/Kantor-Uniwersalny/#demo-och-001
+https://Oskar-Urban.github.io/Kantor-Uniwersalny/?d=och-001
 ```
 
 Alternatywnie działają też:
 
 ```text
-https://Oskar-Urban.github.io/Kantor-Uniwersalny/?d=och-001
+https://Oskar-Urban.github.io/Kantor-Uniwersalny/#demo-och-001
 https://Oskar-Urban.github.io/Kantor-Uniwersalny/demo-och-001
 ```
 
 Ostatni wariant używa `404.html` jako przekierowania na GitHub Pages.
+Wariant `?d=...` jest najbezpieczniejszy do maili, bo Chrome zawsze przeładowuje stronę przy zmianie query stringa.
 
 Plik z danymi demo generuje się z JSON-a leadów:
 

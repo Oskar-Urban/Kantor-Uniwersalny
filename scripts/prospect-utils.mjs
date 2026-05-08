@@ -45,7 +45,8 @@ export function makeDemoUrl(lead, baseUrl = DEFAULT_DEMO_BASE_URL) {
   const code = demoCode(lead);
   if (code) {
     url.search = '';
-    url.hash = `demo-${code}`;
+    url.hash = '';
+    url.searchParams.set('d', code);
     return url.toString();
   }
   url.searchParams.set('demo', encodeDemoPayload(makeDemoPayload(lead)));
